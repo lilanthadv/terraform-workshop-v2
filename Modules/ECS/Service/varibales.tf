@@ -43,7 +43,7 @@ variable "arn_task_definition" {
   type        = string
 }
 
-variable "subnets_id" {
+variable "subnets" {
   description = "Subnet ID in which ecs will deploy the tasks"
   type        = list(string)
 }

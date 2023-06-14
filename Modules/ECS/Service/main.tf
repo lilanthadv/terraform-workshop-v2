@@ -12,7 +12,7 @@ resource "aws_ecs_service" "ecs_service" {
 
   network_configuration {
     security_groups = [var.arn_security_group]
-    subnets         = [var.subnets_id[0], var.subnets_id[1]]
+    subnets         = [var.subnets[0], var.subnets[1]]
   }
 
   load_balancer {

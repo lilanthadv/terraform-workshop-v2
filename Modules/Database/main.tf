@@ -21,7 +21,7 @@ resource "aws_rds_cluster" "db_cluster" {
   skip_final_snapshot       = var.skip_final_snapshot
   final_snapshot_identifier = "${var.app_name}-${var.name}-final-snapshot"
 
-  vpc_security_group_ids = [aws_security_group.db_security_group.id]
+  vpc_security_group_ids = var.security_groups
   db_subnet_group_name   = aws_db_subnet_group.db_subnet_group.name
 
   tags = {
@@ -49,37 +49,10 @@ resource "aws_rds_cluster_instance" "db_instance" {
 resource "aws_db_subnet_group" "db_subnet_group" {
   name        = "${var.app_name}-db-subnet-group"
   description = "DB subnet group for the Aurora serverless DB cluster"
-  subnet_ids  = var.subnet_ids
+  subnet_ids  = var.subnets
 
   tags = {
     Name        = "${var.app_name}-db-subnet-group"
-    Environment = var.environment
-    Version     = var.app_version
-  }
-}
-
-# Create database security group
-resource "aws_security_group" "db_security_group" {
-  name        = "${var.app_name}-db-security-group"
-  description = "Security group for DB instance"
-  vpc_id      = var.vpc_id
-
-  ingress {
-    from_port   = 5432
-    to_port     = 5432
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  tags = {
-    Name        = "${var.app_name}-db-security-group"
     Environment = var.environment
     Version     = var.app_version
   }

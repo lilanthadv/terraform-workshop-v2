@@ -83,12 +83,12 @@ variable "availability_zones" {
   description = "The availability zones where the DB cluster will be created"
 }
 
-variable "vpc_id" {
-  type        = string
-  description = "The vpc id to assign to the DB cluster"
-}
-
-variable "subnet_ids" {
+variable "subnets" {
   type        = list(string)
   description = "A map of subnet ids to assign to the DB cluster"
+}
+
+variable "security_groups" {
+  type        = list(string)
+  description = "A map of security group ids to assign to the DB cluster"
 }

@@ -96,8 +96,8 @@ resource "aws_db_proxy" "db_proxy" {
   name                   = "${var.app_name}-db-proxy"
   debug_logging          = true
   engine_family          = "POSTGRESQL"
-  vpc_security_group_ids = [aws_security_group.db_security_group.id]
-  vpc_subnet_ids         = var.subnet_ids
+  vpc_security_group_ids = var.security_groups
+  vpc_subnet_ids         = var.subnets
   role_arn               = aws_iam_role.db_proxy_iam_role.arn
 
   auth {

@@ -23,30 +23,52 @@ module "networking" {
   availability_zones = local.availability_zones
 }
 
-# # Database module
-# module "database" {
-#   source               = "../../Modules/Database"
-#   app_name             = local.app_name
-#   app_version          = var.app_version
-#   environment          = var.environment
-#   name                 = "db-cluster"
-#   availability_zones   = local.availability_zones
-#   vpc_id               = module.networking.vpc_id
-#   subnet_ids           = module.networking.private_subnets_ids
-#   engine               = "aurora-postgresql"
-#   engine_version       = "13.6"
-#   engine_mode          = "provisioned"
-#   database_name        = var.database_name
-#   master_username      = var.master_username
-#   master_password      = var.master_password
-#   port                 = 5432
-#   deletion_protection  = false
-#   skip_final_snapshot  = true
-#   enable_http_endpoint = true
-#   # Scaling Configuration
-#   max_capacity = 4.0
-#   min_capacity = 2.0
-# }
+# Creating Security Group for Database
+module "security_group_db" {
+  source      = "../../Modules/SecurityGroup"
+  app_name    = local.app_name
+  app_version = var.app_version
+  environment = var.environment
+  name        = "db-sg"
+  description = "Controls access to the DB"
+  vpc         = module.networking.vpc
+  ingress_rules = [{
+    protocol        = "tcp"
+    ingress_port    = 5432
+    cidr_blocks     = ["0.0.0.0/0"]
+    security_groups = []
+    }, {
+    protocol        = "tcp"
+    ingress_port    = 5432
+    cidr_blocks     = ["0.0.0.0/0"]
+    security_groups = [module.security_group_ecs_task.id]
+  }]
+}
+
+# Database module
+module "database" {
+  source               = "../../Modules/Database"
+  app_name             = local.app_name
+  app_version          = var.app_version
+  environment          = var.environment
+  name                 = "db-cluster"
+  availability_zones   = local.availability_zones
+  subnets              = module.networking.private_subnets
+  security_groups      = [module.security_group_db.id]
+  engine               = "aurora-postgresql"
+  engine_version       = "13.6"
+  engine_mode          = "provisioned"
+  database_name        = var.database_name
+  master_username      = var.master_username
+  master_password      = var.master_password
+  port                 = 5432
+  deletion_protection  = false
+  skip_final_snapshot  = true
+  enable_http_endpoint = true
+  # Scaling Configuration
+  max_capacity = 4.0
+  min_capacity = 2.0
+}
 
 # # SQS module
 # module "sqs" {
@@ -76,23 +98,27 @@ module "target_group" {
   create_target_group = true
   port                = 80
   protocol            = "HTTP"
-  vpc                 = module.networking.vpc_id
+  vpc                 = module.networking.vpc
   tg_type             = "ip"
   health_check_path   = "/"
-  health_check_port   = var.port_app_server
+  health_check_port   = 80
 }
 
-# Creating Security Group for the server ALB
+# Creating Security Group for the ALB
 module "security_group_alb" {
-  source              = "../../Modules/SecurityGroup"
-  app_name            = local.app_name
-  app_version         = var.app_version
-  environment         = var.environment
-  name                = "sg-alb"
-  description         = "Controls access to the server ALB"
-  vpc_id              = module.networking.vpc_id
-  cidr_blocks_ingress = ["0.0.0.0/0"]
-  ingress_port        = 80
+  source      = "../../Modules/SecurityGroup"
+  app_name    = local.app_name
+  app_version = var.app_version
+  environment = var.environment
+  name        = "alb-sg"
+  description = "Controls access to the ALB"
+  vpc         = module.networking.vpc
+  ingress_rules = [{
+    protocol        = "tcp"
+    ingress_port    = 80
+    cidr_blocks     = ["0.0.0.0/0"]
+    security_groups = []
+  }]
 }
 
 # Creating Server Application ALB
@@ -103,8 +129,8 @@ module "alb" {
   environment    = var.environment
   name           = "alb"
   create_alb     = true
-  subnets        = module.networking.public_subnets_ids
-  security_group = module.security_group_alb.sg_id
+  subnets        = module.networking.public_subnets
+  security_group = module.security_group_alb.id
   target_group   = module.target_group.arn_tg
 }
 
@@ -160,15 +186,19 @@ module "ecs_taks_definition" {
 
 # Creating a Security Group for ECS TASKS
 module "security_group_ecs_task" {
-  source          = "../../Modules/SecurityGroup"
-  app_name        = local.app_name
-  app_version     = var.app_version
-  environment     = var.environment
-  name            = "ecs-task-sg"
-  description     = "Controls access to the server ECS task"
-  vpc_id          = module.networking.vpc_id
-  ingress_port    = 80
-  security_groups = [module.security_group_alb.sg_id]
+  source      = "../../Modules/SecurityGroup"
+  app_name    = local.app_name
+  app_version = var.app_version
+  environment = var.environment
+  name        = "ecs-task-sg"
+  description = "Controls access to the server ECS task"
+  vpc         = module.networking.vpc
+  ingress_rules = [{
+    protocol        = "tcp"
+    ingress_port    = 80
+    cidr_blocks     = ["0.0.0.0/0"]
+    security_groups = [module.security_group_alb.id]
+  }]
 }
 
 # Creating ECS Cluster 
@@ -189,11 +219,11 @@ module "ecs_service" {
   environment         = var.environment
   name                = "service"
   desired_tasks       = 1
-  arn_security_group  = module.security_group_ecs_task.sg_id
+  arn_security_group  = module.security_group_ecs_task.id
   ecs_cluster_id      = module.ecs_cluster.ecs_cluster_id
   arn_target_group    = module.target_group.arn_tg
   arn_task_definition = module.ecs_taks_definition.arn_task_definition
-  subnets_id          = module.networking.private_subnets_ids
+  subnets             = module.networking.private_subnets
   container_port      = 80
   container_name      = module.ecs_taks_definition.container_name
 }

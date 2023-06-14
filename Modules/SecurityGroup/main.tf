@@ -5,14 +5,17 @@
 resource "aws_security_group" "sg" {
   name        = "${var.app_name}-${var.name}"
   description = var.description
-  vpc_id      = var.vpc_id
+  vpc_id      = var.vpc
 
-  ingress {
-    protocol        = "tcp"
-    from_port       = var.ingress_port
-    to_port         = var.ingress_port
-    cidr_blocks     = var.cidr_blocks_ingress
-    security_groups = var.security_groups
+  dynamic "ingress" {
+    for_each = var.ingress_rules
+    content {
+      protocol        = ingress.value.protocol
+      from_port       = ingress.value.ingress_port
+      to_port         = ingress.value.ingress_port
+      cidr_blocks     = ingress.value.cidr_blocks
+      security_groups = ingress.value.security_groups
+    }
   }
 
   egress {

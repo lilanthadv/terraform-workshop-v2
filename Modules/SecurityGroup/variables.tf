@@ -23,33 +23,26 @@ variable "description" {
   type        = string
 }
 
-variable "vpc_id" {
+variable "vpc" {
   description = "The ID of the VPC where the security group will take place"
   type        = string
 }
 
-variable "ingress_port" {
-  description = "Number of the port to open in the ingress rules"
-  type        = number
-  default     = 0
+variable "ingress_rules" {
+  description = "List of ingress rules for the security group"
+  type = list(object({
+    protocol        = string
+    ingress_port    = number
+    cidr_blocks     = list(string)
+    security_groups = list(string)
+  }))
+  default = []
 }
 
 variable "egress_port" {
   description = "Number of the port to open in the egress rules"
   type        = number
   default     = 0
-}
-
-variable "security_groups" {
-  description = "List of security group Group Names if using EC2-Classic, or Group IDs if using a VPC"
-  type        = list(any)
-  default     = null
-}
-
-variable "cidr_blocks_ingress" {
-  description = "An ingress block of CIDR to grant access to"
-  type        = list(any)
-  default     = null
 }
 
 variable "cidr_blocks_egress" {
