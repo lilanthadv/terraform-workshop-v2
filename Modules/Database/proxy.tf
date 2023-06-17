@@ -64,12 +64,17 @@ resource "aws_iam_role_policy_attachment" "db_proxy_iam_role_policy_attachment" 
   policy_arn = aws_iam_policy.db_proxy_iam_role_policy.arn
 }
 
+resource "random_string" "random_key_suffix" {
+  length  = 8
+  special = false
+}
+
 # Create secret
 resource "aws_secretsmanager_secret" "db_secret" {
-  name = "${var.app_name}-db-secret"
+  name = "${var.app_name}-db-secret-${random_string.random_key_suffix.result}"
 
   tags = {
-    Name        = "${var.app_name}-db-secret"
+    Name        = "${var.app_name}-db-secret-${random_string.random_key_suffix.result}"
     Environment = var.environment
     Version     = var.app_version
   }
