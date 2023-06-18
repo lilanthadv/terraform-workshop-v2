@@ -1,6 +1,10 @@
+/*======================================================================
+  AWS RDS Proxy    
+========================================================================*/
+
 # Create iam role
 resource "aws_iam_role" "db_proxy_iam_role" {
-  name = "${var.app_name}-db-proxy-iam-role"
+  name = "${var.service.resource_name_prefix}-${var.name}-proxy-iam-role"
 
   assume_role_policy = <<EOF
 {
@@ -19,15 +23,18 @@ resource "aws_iam_role" "db_proxy_iam_role" {
 EOF
 
   tags = {
-    Name        = "${var.app_name}-db-proxy-iam-role"
-    Environment = var.environment
-    Version     = var.app_version
+    Name        = "${var.service.resource_name_prefix}-${var.name}-proxy-iam-role"
+    Description = "${var.description} Proxy IAM Role"
+    Service     = var.service.app_name
+    Environment = var.service.app_environment
+    Version     = var.service.app_version
+    User        = var.service.user
   }
 }
 
 # Create iam policy
 resource "aws_iam_policy" "db_proxy_iam_role_policy" {
-  name = "${var.app_name}-db-proxy-iam-role-policy"
+  name = "${var.service.resource_name_prefix}-${var.name}-proxy-iam-role-policy"
 
   policy = <<EOF
 {
@@ -52,9 +59,12 @@ resource "aws_iam_policy" "db_proxy_iam_role_policy" {
 EOF
 
   tags = {
-    Name        = "${var.app_name}-db-proxy-iam-role-policy"
-    Environment = var.environment
-    Version     = var.app_version
+    Name        = "${var.service.resource_name_prefix}-${var.name}-proxy-iam-role-policy"
+    Description = "${var.description} Proxy IAM Role Policy"
+    Service     = var.service.app_name
+    Environment = var.service.app_environment
+    Version     = var.service.app_version
+    User        = var.service.user
   }
 }
 
@@ -71,12 +81,15 @@ resource "random_string" "random_key_suffix" {
 
 # Create secret
 resource "aws_secretsmanager_secret" "db_secret" {
-  name = "${var.app_name}-db-secret-${random_string.random_key_suffix.result}"
+  name = "${var.service.resource_name_prefix}-${var.name}-proxy-secret-${random_string.random_key_suffix.result}"
 
   tags = {
-    Name        = "${var.app_name}-db-secret-${random_string.random_key_suffix.result}"
-    Environment = var.environment
-    Version     = var.app_version
+    Name        = "${var.service.resource_name_prefix}-${var.name}-proxy-secret-${random_string.random_key_suffix.result}"
+    Description = "${var.description} Proxy Secret"
+    Service     = var.service.app_name
+    Environment = var.service.app_environment
+    Version     = var.service.app_version
+    User        = var.service.user
   }
 }
 
@@ -98,7 +111,7 @@ EOF
 
 # Create db proxy
 resource "aws_db_proxy" "db_proxy" {
-  name                   = "${var.app_name}-db-proxy"
+  name                   = "${var.service.resource_name_prefix}-${var.name}-proxy"
   debug_logging          = true
   engine_family          = "POSTGRESQL"
   vpc_security_group_ids = var.security_groups
@@ -112,9 +125,12 @@ resource "aws_db_proxy" "db_proxy" {
   }
 
   tags = {
-    Name        = "${var.app_name}-db-proxy"
-    Environment = var.environment
-    Version     = var.app_version
+    Name        = "${var.service.resource_name_prefix}-${var.name}-proxy"
+    Description = "${var.description} Proxy"
+    Service     = var.service.app_name
+    Environment = var.service.app_environment
+    Version     = var.service.app_version
+    User        = var.service.user
   }
 }
 

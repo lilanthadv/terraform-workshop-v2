@@ -1,3 +1,7 @@
+/*======================================================================================================
+  AWS VPC, Subnets (Public & Private), Internet Gateway, Nat Gateway and Route Table (Public & Private) 
+========================================================================================================*/
+
 # Create the VPC
 resource "aws_vpc" "main" {
   cidr_block           = "10.0.0.0/16"
@@ -5,9 +9,12 @@ resource "aws_vpc" "main" {
   enable_dns_hostnames = true
 
   tags = {
-    Name        = "${var.app_name}-${var.name}"
-    Environment = var.environment
-    Version     = var.app_version
+    Name        = "${var.service.resource_name_prefix}-${var.name}"
+    Description = var.description
+    Service     = var.service.app_name
+    Environment = var.service.app_environment
+    Version     = var.service.app_version
+    User        = var.service.user
   }
 }
 
@@ -19,9 +26,12 @@ resource "aws_subnet" "public_subnet" {
   availability_zone = var.availability_zones[count.index]
 
   tags = {
-    Name        = "${var.app_name}-${var.public_subnet_name}-${count.index}",
-    Environment = var.environment
-    Version     = var.app_version
+    Name        = "${var.service.resource_name_prefix}-${var.name}-public-subnet-${count.index}",
+    Description = "${var.description} Public Subnet ${count.index}"
+    Service     = var.service.app_name
+    Environment = var.service.app_environment
+    Version     = var.service.app_version
+    User        = var.service.user
   }
 }
 
@@ -33,9 +43,12 @@ resource "aws_subnet" "private_subnet" {
   availability_zone = var.availability_zones[count.index]
 
   tags = {
-    Name        = "${var.app_name}-${var.private_subnet_name}-${count.index}",
-    Environment = var.environment
-    Version     = var.app_version
+    Name        = "${var.service.resource_name_prefix}-${var.name}-private-subnet-${count.index}",
+    Description = "${var.description} Private Subnet ${count.index}"
+    Service     = var.service.app_name
+    Environment = var.service.app_environment
+    Version     = var.service.app_version
+    User        = var.service.user
   }
 }
 
@@ -44,9 +57,12 @@ resource "aws_internet_gateway" "internet_gateway" {
   vpc_id = aws_vpc.main.id
 
   tags = {
-    Name        = "${var.app_name}-${var.name}-ig",
-    Environment = var.environment
-    Version     = var.app_version
+    Name        = "${var.service.resource_name_prefix}-${var.name}-ig",
+    Description = "${var.description} Internet Gateway"
+    Service     = var.service.app_name
+    Environment = var.service.app_environment
+    Version     = var.service.app_version
+    User        = var.service.user
   }
 }
 
@@ -60,9 +76,12 @@ resource "aws_route_table" "public_route_table" {
   }
 
   tags = {
-    Name        = "${var.app_name}-${var.name}-public-rt",
-    Environment = var.environment
-    Version     = var.app_version
+    Name        = "${var.service.resource_name_prefix}-${var.name}-public-rt",
+    Description = "${var.description} Route Table for the Public Subnets"
+    Service     = var.service.app_name
+    Environment = var.service.app_environment
+    Version     = var.service.app_version
+    User        = var.service.user
   }
 }
 
@@ -78,9 +97,12 @@ resource "aws_eip" "nat_gateway_eip" {
   domain = "vpc"
 
   tags = {
-    Name        = "${var.app_name}-${var.name}-ng-eip",
-    Environment = var.environment
-    Version     = var.app_version
+    Name        = "${var.service.resource_name_prefix}-${var.name}-ng-eip",
+    Description = "${var.description} Elastic IP for the NAT gateway"
+    Service     = var.service.app_name
+    Environment = var.service.app_environment
+    Version     = var.service.app_version
+    User        = var.service.user
   }
 }
 
@@ -90,9 +112,12 @@ resource "aws_nat_gateway" "nat_gateway" {
   subnet_id     = aws_subnet.public_subnet[0].id
 
   tags = {
-    Name        = "${var.app_name}-${var.name}-ng",
-    Environment = var.environment
-    Version     = var.app_version
+    Name        = "${var.service.resource_name_prefix}-${var.name}-ng",
+    Description = "${var.description} NAT gateway"
+    Service     = var.service.app_name
+    Environment = var.service.app_environment
+    Version     = var.service.app_version
+    User        = var.service.user
   }
 }
 
@@ -106,9 +131,12 @@ resource "aws_route_table" "private_route_table" {
   }
 
   tags = {
-    Name        = "${var.app_name}-${var.name}-private-rt",
-    Environment = var.environment
-    Version     = var.app_version
+    Name        = "${var.service.resource_name_prefix}-${var.name}-private-rt",
+    Description = "${var.description} Route Table for the Private Subnets"
+    Service     = var.service.app_name
+    Environment = var.service.app_environment
+    Version     = var.service.app_version
+    User        = var.service.user
   }
 }
 

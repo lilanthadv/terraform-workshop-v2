@@ -1,13 +1,14 @@
 /*====================================
-      AWS ECS Task definition
+  AWS ECS Task definition
 =====================================*/
 
 locals {
-  container_name = "${var.app_name}-container"
+  container_name = "${var.service.resource_name_prefix}-container"
 }
 
+# AWS ECS Task Definition
 resource "aws_ecs_task_definition" "ecs_task_definition" {
-  family                   = "${var.app_name}-${var.name}"
+  family                   = "${var.service.resource_name_prefix}-${var.name}"
   network_mode             = "awsvpc"
   requires_compatibilities = ["FARGATE"]
   cpu                      = var.cpu
@@ -22,7 +23,7 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
             "logDriver": "awslogs",
             "secretOptions": null,
             "options": {
-              "awslogs-group": "/ecs/${var.app_name}-${var.name}",
+              "awslogs-group": "/ecs/${var.service.resource_name_prefix}-${var.name}",
               "awslogs-region": "${var.region}",
               "awslogs-stream-prefix": "ecs"
             }
@@ -42,20 +43,26 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
     DEFINITION
 
   tags = {
-    Name        = "${var.app_name}-${var.name}"
-    Environment = var.environment
-    Version     = var.app_version
+    Name        = "${var.service.resource_name_prefix}-${var.name}"
+    Description = var.description
+    Service     = var.service.app_name
+    Environment = var.service.app_environment
+    Version     = var.service.app_version
+    User        = var.service.user
   }
 }
 
 # CloudWatch Logs groups to store ecs-containers logs
 resource "aws_cloudwatch_log_group" "TaskDF-Log_Group" {
-  name              = "/ecs/${var.app_name}-${var.name}"
+  name              = "/ecs/${var.service.resource_name_prefix}-${var.name}"
   retention_in_days = 30
 
   tags = {
-    Name        = "/ecs/${var.app_name}-${var.name}"
-    Environment = var.environment
-    Version     = var.app_version
+    Name        = "/ecs/${var.service.resource_name_prefix}-${var.name}"
+    Description = var.description
+    Service     = var.service.app_name
+    Environment = var.service.app_environment
+    Version     = var.service.app_version
+    User        = var.service.user
   }
 }

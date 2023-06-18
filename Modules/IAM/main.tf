@@ -1,11 +1,11 @@
 /*===========================================
-      AWS IAM for different resources
+  AWS IAM for different resources
 ============================================*/
 
-# IAM Roles
+# ECS Task Excecution Role
 resource "aws_iam_role" "ecs_task_excecution_role" {
   count              = var.create_ecs_role == true ? 1 : 0
-  name               = "${var.app_name}-${var.name}"
+  name               = "${var.service.resource_name_prefix}-${var.name}"
   assume_role_policy = <<EOF
 {
   "Version": "2012-10-17",
@@ -21,20 +21,25 @@ resource "aws_iam_role" "ecs_task_excecution_role" {
   ]
 }
 EOF
-  tags = {
-    Name        = "${var.app_name}-${var.name}"
-    Environment = var.environment
-    Version     = var.app_version
-  }
 
   lifecycle {
     create_before_destroy = true
   }
+
+  tags = {
+    Name        = "${var.service.resource_name_prefix}-${var.name}"
+    Description = var.description
+    Service     = var.service.app_name
+    Environment = var.service.app_environment
+    Version     = var.service.app_version
+    User        = var.service.user
+  }
 }
 
+# ECS Task Role
 resource "aws_iam_role" "ecs_task_role" {
   count              = var.create_ecs_role == true ? 1 : 0
-  name               = "${var.app_name}-${var.name_ecs_task_role}"
+  name               = "${var.service.resource_name_prefix}-${var.name_ecs_task_role}"
   assume_role_policy = <<EOF
 {
   "Version": "2012-10-17",
@@ -50,20 +55,25 @@ resource "aws_iam_role" "ecs_task_role" {
   ]
 }
 EOF
-  tags = {
-    Name        = "${var.app_name}-${var.name_ecs_task_role}"
-    Environment = var.environment
-    Version     = var.app_version
-  }
 
   lifecycle {
     create_before_destroy = true
   }
+
+  tags = {
+    Name        = "${var.service.resource_name_prefix}-${var.name_ecs_task_role}"
+    Description = var.description
+    Service     = var.service.app_name
+    Environment = var.service.app_environment
+    Version     = var.service.app_version
+    User        = var.service.user
+  }
 }
 
+# Devops Role
 resource "aws_iam_role" "devops_role" {
   count              = var.create_devops_role == true ? 1 : 0
-  name               = "${var.app_name}-${var.name}"
+  name               = "${var.service.resource_name_prefix}-${var.name}"
   assume_role_policy = <<EOF
 {
   "Version": "2012-10-17",
@@ -82,20 +92,25 @@ resource "aws_iam_role" "devops_role" {
   ]
 }
 EOF
-  tags = {
-    Name        = "${var.app_name}-${var.name}"
-    Environment = var.environment
-    Version     = var.app_version
-  }
 
   lifecycle {
     create_before_destroy = true
   }
+
+  tags = {
+    Name        = "${var.service.resource_name_prefix}-${var.name}"
+    Description = var.description
+    Service     = var.service.app_name
+    Environment = var.service.app_environment
+    Version     = var.service.app_version
+    User        = var.service.user
+  }
 }
 
+# Codedeploy Role
 resource "aws_iam_role" "codedeploy_role" {
   count              = var.create_codedeploy_role == true ? 1 : 0
-  name               = "${var.app_name}-${var.name}"
+  name               = "${var.service.resource_name_prefix}-${var.name}"
   assume_role_policy = <<EOF
 {
   "Version": "2012-10-17",
@@ -113,17 +128,19 @@ resource "aws_iam_role" "codedeploy_role" {
 EOF
 
   tags = {
-    Name        = "${var.app_name}-${var.name}"
-    Environment = var.environment
-    Version     = var.app_version
+    Name        = "${var.service.resource_name_prefix}-${var.name}"
+    Description = var.description
+    Service     = var.service.app_name
+    Environment = var.service.app_environment
+    Version     = var.service.app_version
+    User        = var.service.user
   }
-
 }
 
 # IAM Policies
 resource "aws_iam_policy" "policy_for_role" {
   count       = var.create_devops_policy == true ? 1 : 0
-  name        = "${var.app_name}-${var.name}-policy"
+  name        = "${var.service.resource_name_prefix}-${var.name}-policy"
   description = "IAM Policy for Role ${var.name}"
   policy      = data.aws_iam_policy_document.role_policy_devops_role.json
 
@@ -132,15 +149,19 @@ resource "aws_iam_policy" "policy_for_role" {
   }
 
   tags = {
-    Name        = "${var.app_name}-${var.name}-policy"
-    Environment = var.environment
-    Version     = var.app_version
+    Name        = "${var.service.resource_name_prefix}-${var.name}-policy"
+    Description = "IAM Policy for Role ${var.name}"
+    Service     = var.service.app_name
+    Environment = var.service.app_environment
+    Version     = var.service.app_version
+    User        = var.service.user
   }
 }
 
+# Policy for ECS Task Role
 resource "aws_iam_policy" "policy_for_ecs_task_role" {
   count       = var.create_ecs_role == true ? 1 : 0
-  name        = "${var.app_name}-${var.name_ecs_task_role}-policy"
+  name        = "${var.service.resource_name_prefix}-${var.name_ecs_task_role}-policy"
   description = "IAM Policy for Role ${var.name_ecs_task_role}"
   policy      = data.aws_iam_policy_document.role_policy_ecs_task_role.json
 
@@ -149,9 +170,12 @@ resource "aws_iam_policy" "policy_for_ecs_task_role" {
   }
 
   tags = {
-    Name        = "${var.app_name}-${var.name_ecs_task_role}-policy"
-    Environment = var.environment
-    Version     = var.app_version
+    Name        = "${var.service.resource_name_prefix}-${var.name_ecs_task_role}-policy"
+    Description = "IAM Policy for Role ${var.name_ecs_task_role}"
+    Service     = var.service.app_name
+    Environment = var.service.app_environment
+    Version     = var.service.app_version
+    User        = var.service.user
   }
 }
 

@@ -2,8 +2,9 @@
       AWS Security group
 =================================*/
 
+# AWS Security Group
 resource "aws_security_group" "sg" {
-  name        = "${var.app_name}-${var.name}"
+  name        = "${var.service.resource_name_prefix}-${var.name}"
   description = var.description
   vpc_id      = var.vpc
 
@@ -26,8 +27,11 @@ resource "aws_security_group" "sg" {
   }
 
   tags = {
-    Name        = "${var.app_name}-${var.name}"
-    Environment = var.environment
-    Version     = var.app_version
+    Name        = "${var.service.resource_name_prefix}-${var.name}"
+    Description = var.description
+    Service     = var.service.app_name
+    Environment = var.service.app_environment
+    Version     = var.service.app_version
+    User        = var.service.user
   }
 }

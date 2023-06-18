@@ -1,4 +1,4 @@
-### Database
-database_name   = "test"
-master_username = "root"
-master_password = "Root123456"
+environment = "dev"
+app_name    = "terraform-aws"
+app_version = "0.0.1"
+region      = "ap-southeast-2"

@@ -1,8 +1,14 @@
+/*====================================
+  AWS EC2 Instance & Elastic IP
+======================================*/
+
+# Key Pair for EC2 Instance
 data "aws_key_pair" "instance_key" {
   key_name           = var.key_pair_name
   include_public_key = true
 }
 
+# AWS Instance
 resource "aws_instance" "instance" {
   ami                         = var.ami
   instance_type               = var.instance_type
@@ -16,20 +22,27 @@ resource "aws_instance" "instance" {
   key_name = data.aws_key_pair.instance_key.key_name
 
   tags = {
-    Name        = "${var.app_name}-${var.name}"
-    Environment = var.environment
-    Version     = var.app_version
+    Name        = "${var.service.resource_name_prefix}-${var.name}"
+    Description = var.description
+    Service     = var.service.app_name
+    Environment = var.service.app_environment
+    Version     = var.service.app_version
+    User        = var.service.user
   }
 }
 
+# AWS EIP
 resource "aws_eip" "bastion_host" {
   count    = var.associate_elastic_ip ? 1 : 0
   domain   = "vpc"
   instance = aws_instance.instance.id
 
   tags = {
-    Name        = "${var.app_name}-${var.name}"
-    Environment = var.environment
-    Version     = var.app_version
+    Name        = "${var.service.resource_name_prefix}-${var.name}-eip"
+    Description = "${var.description} Elastic IP"
+    Service     = var.service.app_name
+    Environment = var.service.app_environment
+    Version     = var.service.app_version
+    User        = var.service.user
   }
 }

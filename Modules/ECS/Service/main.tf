@@ -1,9 +1,10 @@
 /*==========================
-      AWS ECS Service
+  AWS ECS Service
 ===========================*/
 
+# AWS ECS Service
 resource "aws_ecs_service" "ecs_service" {
-  name                              = "${var.app_name}-${var.name}"
+  name                              = "${var.service.resource_name_prefix}-${var.name}"
   cluster                           = var.ecs_cluster_id
   task_definition                   = var.arn_task_definition
   desired_count                     = var.desired_tasks
@@ -30,9 +31,11 @@ resource "aws_ecs_service" "ecs_service" {
   }
 
   tags = {
-    Name        = "${var.app_name}-${var.name}"
-    Environment = var.environment
-    Version     = var.app_version
+    Name        = "${var.service.resource_name_prefix}-${var.name}"
+    Description = var.description
+    Service     = var.service.app_name
+    Environment = var.service.app_environment
+    Version     = var.service.app_version
+    User        = var.service.user
   }
-
 }

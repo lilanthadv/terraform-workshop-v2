@@ -1,16 +1,12 @@
-variable "app_name" {
-  type        = string
-  description = "The application name"
-}
-
-variable "app_version" {
-  type        = string
-  description = "The application version"
-}
-
-variable "environment" {
-  type        = string
-  description = "The environment"
+variable "service" {
+  description = "Service details"
+  type = object({
+    app_name             = string
+    app_environment      = string
+    app_version          = string
+    user                 = string
+    resource_name_prefix = string
+  })
 }
 
 variable "name" {
@@ -18,19 +14,12 @@ variable "name" {
   type        = string
 }
 
+variable "description" {
+  type        = string
+  description = "The description"
+}
+
 variable "availability_zones" {
   type        = list(string)
   description = "The availability zones"
-}
-
-variable "public_subnet_name" {
-  type        = string
-  description = "The public subnet name"
-  default     = "public-subnet"
-}
-
-variable "private_subnet_name" {
-  type        = string
-  description = "The private subnet name"
-  default     = "private-subnet"
 }

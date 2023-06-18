@@ -2,9 +2,10 @@
       AWS Application Load Balancer + Target groups
 ===============================================================*/
 
+# ALB
 resource "aws_alb" "alb" {
   count              = var.create_alb == true ? 1 : 0
-  name               = "${var.app_name}-${var.name}"
+  name               = "${var.service.resource_name_prefix}-${var.name}"
   subnets            = [var.subnets[0], var.subnets[1]]
   security_groups    = [var.security_group]
   load_balancer_type = "application"
@@ -13,9 +14,12 @@ resource "aws_alb" "alb" {
   idle_timeout       = 30
 
   tags = {
-    Name        = "${var.app_name}-${var.name}"
-    Environment = var.environment
-    Version     = var.app_version
+    Name        = "${var.service.resource_name_prefix}-${var.name}"
+    Description = var.description
+    Service     = var.service.app_name
+    Environment = var.service.app_environment
+    Version     = var.service.app_version
+    User        = var.service.user
   }
 }
 
@@ -56,7 +60,7 @@ resource "aws_alb_listener" "http_listener" {
 # Target Groups for ALB
 resource "aws_alb_target_group" "target_group" {
   count                = var.create_target_group == true ? 1 : 0
-  name                 = "${var.app_name}-${var.name}"
+  name                 = "${var.service.resource_name_prefix}-${var.name}-tg"
   port                 = var.port
   protocol             = var.protocol
   vpc_id               = var.vpc
@@ -80,8 +84,11 @@ resource "aws_alb_target_group" "target_group" {
   }
 
   tags = {
-    Name        = "${var.app_name}-${var.name}"
-    Environment = var.environment
-    Version     = var.app_version
+    Name        = "${var.service.resource_name_prefix}-${var.name}-tg"
+    Description = "${var.description} Target Group"
+    Service     = var.service.app_name
+    Environment = var.service.app_environment
+    Version     = var.service.app_version
+    User        = var.service.user
   }
 }
