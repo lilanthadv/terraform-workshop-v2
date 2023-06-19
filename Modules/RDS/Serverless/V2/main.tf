@@ -6,6 +6,21 @@ locals {
   current_date = formatdate("YYYY-MMM-DD-hh-mm", timestamp())
 }
 
+resource "aws_kms_key" "rds_encryption_key" {
+  count               = var.storage_encrypted ? 1 : 0
+  description         = "KMS key for RDS encryption"
+  enable_key_rotation = true
+
+  tags = {
+    Name        = "${var.service.resource_name_prefix}-${var.name}-kms-key"
+    Description = "KMS key for RDS encryption"
+    Service     = var.service.app_name
+    Environment = var.service.app_environment
+    Version     = var.service.app_version
+    User        = var.service.user
+  }
+}
+
 # Create database cluster
 resource "aws_rds_cluster" "db_cluster" {
   cluster_identifier   = "${var.service.resource_name_prefix}-${var.name}-cluster"
@@ -18,6 +33,10 @@ resource "aws_rds_cluster" "db_cluster" {
   port                 = var.port
   deletion_protection  = var.deletion_protection
   enable_http_endpoint = var.enable_http_endpoint
+
+  # Encryption Configuration
+  storage_encrypted = var.storage_encrypted
+  kms_key_id        = var.storage_encrypted ? aws_kms_key.rds_encryption_key[0].arn : null
 
   # Scaling Configuration
   serverlessv2_scaling_configuration {

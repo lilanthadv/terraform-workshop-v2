@@ -85,6 +85,8 @@ module "database" {
   # Scaling Configuration
   max_capacity = 4.0
   min_capacity = 2.0
+  # Encryption Configuration
+  storage_encrypted = true
 }
 
 # Ubuntu AMI

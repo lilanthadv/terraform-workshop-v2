@@ -93,3 +93,8 @@ variable "security_groups" {
   type        = list(string)
   description = "A map of security group ids to assign to the DB cluster"
 }
+
+variable "storage_encrypted" {
+  type        = bool
+  description = "The storage encrypted of the database"
+}

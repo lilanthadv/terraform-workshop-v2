@@ -83,6 +83,8 @@ resource "random_string" "random_key_suffix" {
 resource "aws_secretsmanager_secret" "db_secret" {
   name = "${var.service.resource_name_prefix}-${var.name}-proxy-secret-${random_string.random_key_suffix.result}"
 
+  kms_key_id = var.storage_encrypted ? aws_kms_key.rds_encryption_key[0].arn : null
+
   tags = {
     Name        = "${var.service.resource_name_prefix}-${var.name}-proxy-secret-${random_string.random_key_suffix.result}"
     Description = "${var.description} Proxy Secret"
