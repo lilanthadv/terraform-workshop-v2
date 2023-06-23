@@ -25,131 +25,131 @@ locals {
   }
 }
 
-# Networking module
-module "networking" {
-  source             = "../../Modules/Networking"
-  service            = local.service
-  name               = "vpc"
-  description        = "Application VPC"
-  availability_zones = local.availability_zones
-}
+# # Networking module
+# module "networking" {
+#   source             = "../../Modules/Networking"
+#   service            = local.service
+#   name               = "vpc"
+#   description        = "Application VPC"
+#   availability_zones = local.availability_zones
+# }
 
-# Creating Security Group for Database
-module "security_group_db" {
-  source      = "../../Modules/SecurityGroup"
-  service     = local.service
-  name        = "db-sg"
-  description = "Security Group for Database"
-  vpc         = module.networking.vpc
-  ingress_rules = [
-    {
-      protocol        = "tcp"
-      ingress_port    = 5432
-      cidr_blocks     = ["0.0.0.0/0"]
-      security_groups = []
-    },
-    {
-      protocol        = "tcp"
-      ingress_port    = 5432
-      cidr_blocks     = ["0.0.0.0/0"]
-      security_groups = [module.security_group_bastion_host.id]
-    },
-    # {
-    #   protocol        = "tcp"
-    #   ingress_port    = 5432
-    #   cidr_blocks     = ["0.0.0.0/0"]
-    #   security_groups = [module.security_group_ecs_task.id]
-    # }
-  ]
-}
+# # Creating Security Group for Database
+# module "security_group_db" {
+#   source      = "../../Modules/SecurityGroup"
+#   service     = local.service
+#   name        = "db-sg"
+#   description = "Security Group for Database"
+#   vpc         = module.networking.vpc
+#   ingress_rules = [
+#     {
+#       protocol        = "tcp"
+#       ingress_port    = 5432
+#       cidr_blocks     = ["0.0.0.0/0"]
+#       security_groups = []
+#     },
+#     {
+#       protocol        = "tcp"
+#       ingress_port    = 5432
+#       cidr_blocks     = ["0.0.0.0/0"]
+#       security_groups = [module.security_group_bastion_host.id]
+#     },
+#     # {
+#     #   protocol        = "tcp"
+#     #   ingress_port    = 5432
+#     #   cidr_blocks     = ["0.0.0.0/0"]
+#     #   security_groups = [module.security_group_ecs_task.id]
+#     # }
+#   ]
+# }
 
-# Database module
-module "database" {
-  source               = "../../Modules/RDS/Serverless/V2"
-  service              = local.service
-  name                 = "db"
-  description          = "Serverless V2 RDS Database"
-  availability_zones   = local.availability_zones
-  subnets              = module.networking.private_subnets
-  security_groups      = [module.security_group_db.id]
-  engine               = "aurora-postgresql"
-  engine_version       = "13.6"
-  engine_mode          = "provisioned"
-  database_name        = var.database_name
-  master_username      = var.master_username
-  master_password      = var.master_password
-  port                 = 5432
-  deletion_protection  = false
-  skip_final_snapshot  = true
-  enable_http_endpoint = true
-  # Scaling Configuration
-  max_capacity = 4.0
-  min_capacity = 2.0
-  # Encryption Configuration
-  storage_encrypted = true
-}
+# # Database module
+# module "database" {
+#   source               = "../../Modules/RDS/Serverless/V2"
+#   service              = local.service
+#   name                 = "db"
+#   description          = "Serverless V2 RDS Database"
+#   availability_zones   = local.availability_zones
+#   subnets              = module.networking.private_subnets
+#   security_groups      = [module.security_group_db.id]
+#   engine               = "aurora-postgresql"
+#   engine_version       = "13.6"
+#   engine_mode          = "provisioned"
+#   database_name        = var.database_name
+#   master_username      = var.master_username
+#   master_password      = var.master_password
+#   port                 = 5432
+#   deletion_protection  = false
+#   skip_final_snapshot  = true
+#   enable_http_endpoint = true
+#   # Scaling Configuration
+#   max_capacity = 4.0
+#   min_capacity = 2.0
+#   # Encryption Configuration
+#   storage_encrypted = true
+# }
 
-# Ubuntu AMI
-data "aws_ami" "ubuntu" {
-  most_recent = true
+# # Ubuntu AMI
+# data "aws_ami" "ubuntu" {
+#   most_recent = true
 
-  filter {
-    name   = "name"
-    values = ["ubuntu/images/hvm-ssd/ubuntu-jammy-22.04-amd64-server-*"]
-  }
+#   filter {
+#     name   = "name"
+#     values = ["ubuntu/images/hvm-ssd/ubuntu-jammy-22.04-amd64-server-*"]
+#   }
 
-  filter {
-    name   = "virtualization-type"
-    values = ["hvm"]
-  }
+#   filter {
+#     name   = "virtualization-type"
+#     values = ["hvm"]
+#   }
 
-  filter {
-    name   = "architecture"
-    values = ["x86_64"]
-  }
+#   filter {
+#     name   = "architecture"
+#     values = ["x86_64"]
+#   }
 
-  owners = ["099720109477"] # Canonical
-}
+#   owners = ["099720109477"] # Canonical
+# }
 
-# Creating Security Group for Bastion Host
-module "security_group_bastion_host" {
-  source      = "../../Modules/SecurityGroup"
-  service     = local.service
-  name        = "bastion-host-sg"
-  description = "Security Group for Bastion Host"
-  vpc         = module.networking.vpc
-  ingress_rules = [
-    {
-      protocol        = "tcp"
-      ingress_port    = 22
-      cidr_blocks     = ["0.0.0.0/0"]
-      security_groups = []
-    },
-    {
-      protocol        = "tcp"
-      ingress_port    = 5432
-      cidr_blocks     = ["0.0.0.0/0"]
-      security_groups = []
-    }
-  ]
-}
+# # Creating Security Group for Bastion Host
+# module "security_group_bastion_host" {
+#   source      = "../../Modules/SecurityGroup"
+#   service     = local.service
+#   name        = "bastion-host-sg"
+#   description = "Security Group for Bastion Host"
+#   vpc         = module.networking.vpc
+#   ingress_rules = [
+#     {
+#       protocol        = "tcp"
+#       ingress_port    = 22
+#       cidr_blocks     = ["0.0.0.0/0"]
+#       security_groups = []
+#     },
+#     {
+#       protocol        = "tcp"
+#       ingress_port    = 5432
+#       cidr_blocks     = ["0.0.0.0/0"]
+#       security_groups = []
+#     }
+#   ]
+# }
 
-# Creating Bastion Host for DB
-module "bastion_host" {
-  source                      = "../../Modules/EC2"
-  service                     = local.service
-  name                        = "bastion-host"
-  description                 = "Bastion Host to the connect to the DB"
-  ami                         = data.aws_ami.ubuntu.id
-  instance_type               = "t2.micro"
-  subnet_id                   = module.networking.public_subnets[0]
-  security_groups             = [module.security_group_bastion_host.id]
-  associate_public_ip_address = true
-  availability_zone           = local.availability_zones[0]
-  user_data                   = file("./bastion_host_user_data.sh")
-  associate_elastic_ip        = false
-  key_pair_name               = "bastion_host_key"
-}
+# # Creating Bastion Host for DB
+# module "bastion_host" {
+#   source                      = "../../Modules/EC2"
+#   service                     = local.service
+#   name                        = "bastion-host"
+#   description                 = "Bastion Host to the connect to the DB"
+#   ami                         = data.aws_ami.ubuntu.id
+#   instance_type               = "t2.micro"
+#   subnet_id                   = module.networking.public_subnets[0]
+#   security_groups             = [module.security_group_bastion_host.id]
+#   associate_public_ip_address = true
+#   availability_zone           = local.availability_zones[0]
+#   user_data                   = file("./bastion_host_user_data.sh")
+#   associate_elastic_ip        = false
+#   key_pair_name               = "bastion_host_key"
+# }
 
 # # SQS module
 # module "sqs" {
@@ -310,4 +310,12 @@ module "bastion_host" {
 #   max_capacity = 4
 # }
 
+# S3 Bucket
+module "s3" {
+  source            = "../../Modules/S3"
+  service           = local.service
+  name              = "s3"
+  description       = "S3 Bucket"
+  enable_versioning = false
+}
 

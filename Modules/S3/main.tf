@@ -1,0 +1,152 @@
+/*======================================================================
+  AWS S3 Bucket   
+========================================================================*/
+
+locals {
+  bucket_name = "${var.service.resource_name_prefix}-${var.name}"
+}
+
+# S3 Bucket
+resource "aws_s3_bucket" "s3_web" {
+  bucket = local.bucket_name
+
+  tags = {
+    Name        = "${local.bucket_name}"
+    Description = var.description
+    Service     = var.service.app_name
+    Environment = var.service.app_environment
+    Version     = var.service.app_version
+    User        = var.service.user
+  }
+}
+
+resource "aws_s3_bucket_cors_configuration" "s3_web_cors_configuration" {
+  bucket = aws_s3_bucket.s3_web.id
+
+  cors_rule {
+    allowed_headers = ["*"]
+    allowed_methods = ["GET", "HEAD"]
+    allowed_origins = ["*"]
+    expose_headers  = ["ETag"]
+    max_age_seconds = 3000
+  }
+}
+
+resource "aws_s3_bucket_public_access_block" "s3_web_acl_public_access_block" {
+  bucket = aws_s3_bucket.s3_web.id
+
+  block_public_acls       = false
+  block_public_policy     = false
+  ignore_public_acls      = false
+  restrict_public_buckets = false
+}
+
+resource "aws_s3_bucket_ownership_controls" "s3_web_acl_ownership" {
+  bucket = aws_s3_bucket.s3_web.id
+  rule {
+    object_ownership = "BucketOwnerPreferred"
+  }
+  depends_on = [aws_s3_bucket_public_access_block.s3_web_acl_public_access_block]
+}
+
+resource "aws_s3_bucket_acl" "s3_web_cors_configuration_acl" {
+  bucket     = aws_s3_bucket.s3_web.id
+  acl        = "public-read"
+  depends_on = [aws_s3_bucket_ownership_controls.s3_web_acl_ownership]
+}
+
+resource "aws_s3_bucket_policy" "s3_web_bucket_policy" {
+  bucket = aws_s3_bucket.s3_web.id
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Principal = "*"
+        Action = [
+          "s3:*",
+        ]
+        Effect = "Allow"
+        Resource = [
+          "arn:aws:s3:::${local.bucket_name}",
+          "arn:aws:s3:::${local.bucket_name}/*"
+        ]
+      },
+      {
+        Sid       = "PublicReadGetObject"
+        Principal = "*"
+        Action = [
+          "s3:GetObject",
+        ]
+        Effect = "Allow"
+        Resource = [
+          "arn:aws:s3:::${local.bucket_name}",
+          "arn:aws:s3:::${local.bucket_name}/*"
+        ]
+      },
+    ]
+  })
+
+  depends_on = [aws_s3_bucket_public_access_block.s3_web_acl_public_access_block]
+}
+
+resource "aws_s3_bucket_website_configuration" "s3_web_website_configuration" {
+  bucket = aws_s3_bucket.s3_web.id
+
+  index_document {
+    suffix = "index.html"
+  }
+
+  error_document {
+    key = "error.html"
+  }
+}
+
+# CloudFront Distribution
+resource "aws_cloudfront_distribution" "s3_web_distribution" {
+  origin {
+    domain_name = aws_s3_bucket.s3_web.bucket_regional_domain_name
+    origin_id   = aws_s3_bucket.s3_web.id
+  }
+
+  enabled             = true
+  is_ipv6_enabled     = true
+  comment             = "CloudFront distribution"
+  default_root_object = "index.html"
+
+  default_cache_behavior {
+    allowed_methods  = ["DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT"]
+    cached_methods   = ["GET", "HEAD"]
+    target_origin_id = aws_s3_bucket.s3_web.id
+
+    forwarded_values {
+      query_string = false
+      cookies {
+        forward = "none"
+      }
+    }
+
+    viewer_protocol_policy = "allow-all"
+    min_ttl                = 0
+    default_ttl            = 3600
+    max_ttl                = 86400
+  }
+
+  restrictions {
+    geo_restriction {
+      restriction_type = "none"
+    }
+  }
+
+  viewer_certificate {
+    cloudfront_default_certificate = true
+  }
+
+  tags = {
+    Name        = "${local.bucket_name}-cloudfront"
+    Description = "${var.description} CloudFront Distribution"
+    Service     = var.service.app_name
+    Environment = var.service.app_environment
+    Version     = var.service.app_version
+    User        = var.service.user
+  }
+}
