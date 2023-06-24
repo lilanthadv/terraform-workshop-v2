@@ -33,7 +33,8 @@ resource "aws_cognito_user_pool" "user_pool" {
   }
 
   lambda_config {
-    pre_sign_up = var.lambda_config.pre_sign_up_arn
+    pre_sign_up       = var.lambda_config.pre_sign_up_arn
+    post_confirmation = var.lambda_config.post_confirmation_arn
   }
 
   tags = {

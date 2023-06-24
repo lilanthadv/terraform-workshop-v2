@@ -33,7 +33,8 @@ variable "auto_verified_attributes" {
 
 variable "lambda_config" {
   type = object({
-    pre_sign_up_arn = string
+    pre_sign_up_arn       = string
+    post_confirmation_arn = string
   })
   description = "Lambda Config"
 }

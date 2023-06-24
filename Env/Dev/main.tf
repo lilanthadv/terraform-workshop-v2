@@ -326,7 +326,8 @@ module "cognito" {
   description = "Cognito User Pool"
 
   lambda_config = {
-    pre_sign_up_arn = ""
+    pre_sign_up_arn       = ""
+    post_confirmation_arn = ""
   }
 
   google_configurations = {
