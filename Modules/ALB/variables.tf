@@ -100,4 +100,5 @@ variable "health_check_port" {
 variable "ssl_certificate_arn" {
   description = "SSL Certificate ARN"
   type        = string
+  default     = null
 }
