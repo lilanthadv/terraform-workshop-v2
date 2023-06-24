@@ -16,31 +16,29 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
   execution_role_arn       = var.execution_role_arn
   task_role_arn            = var.task_role_arn
 
-  container_definitions = <<DEFINITION
-    [
-      {
-        "logConfiguration": {
-            "logDriver": "awslogs",
-            "secretOptions": null,
-            "options": {
-              "awslogs-group": "/ecs/${var.service.resource_name_prefix}-${var.name}",
-              "awslogs-region": "${var.region}",
-              "awslogs-stream-prefix": "ecs"
-            }
-          },
-        "cpu": 0,
-        "image": "${var.docker_repo}",
-        "name": "${local.container_name}",
-        "networkMode": "awsvpc",
-        "portMappings": [
-          {
-            "containerPort": ${var.container_port},
-            "hostPort": ${var.container_port}
-          }
-        ]
+  container_definitions = jsonencode([
+    {
+      "name" : "${local.container_name}",
+      "image" : "${var.docker_repo}",
+      "cpu" : 0,
+      "networkMode" : "awsvpc",
+      "portMappings" : [
+        {
+          "containerPort" : var.container_port,
+          "hostPort" : var.container_port
         }
-    ]
-    DEFINITION
+      ],
+      "logConfiguration" : {
+        "logDriver" : "awslogs",
+        "secretOptions" : null,
+        "options" : {
+          "awslogs-group" : "/ecs/${var.service.resource_name_prefix}-${var.name}",
+          "awslogs-region" : "${var.region}",
+          "awslogs-stream-prefix" : "ecs"
+        }
+      }
+    }
+  ])
 
   tags = {
     Name        = "${var.service.resource_name_prefix}-${var.name}"
