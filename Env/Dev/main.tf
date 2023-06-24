@@ -264,6 +264,16 @@ module "ecs_taks_definition" {
   region         = var.region
   container_port = var.container_port
   host_port      = var.host_port
+  # container env
+  access_key           = var.access_key
+  cognito_access_key   = var.access_key
+  cognito_client_id    = module.cognito.client_id
+  cognito_domain       = module.cognito.domain
+  cognito_redirect_uri = "https://dittoflow.com/cb"
+  cognito_region       = var.region
+  cognito_secret_key   = var.secret_key
+  cognito_user_pool_id = module.cognito.id
+  database_url         = "postgresql://${var.master_username}:${var.master_password}@${module.database.proxy_endpoint}"
 }
 
 # Creating a Security Group for ECS Task

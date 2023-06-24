@@ -36,7 +36,18 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
           "awslogs-region" : "${var.region}",
           "awslogs-stream-prefix" : "ecs"
         }
-      }
+      },
+      environment = [
+        { name = "ACCESS_KEY", value = "value_2" },
+        { name = "COGNITO_ACCESS_KEY", value = "value_1" },
+        { name = "COGNITO_CLIENT_ID", value = "value_2" },
+        { name = "COGNITO_DOMAIN", value = "value_2" },
+        { name = "COGNITO_REDIRECT_URI", value = "value_2" },
+        { name = "COGNITO_REGION", value = "value_2" },
+        { name = "COGNITO_SECRET_KEY", value = "value_2" },
+        { name = "COGNITO_USER_POOL_ID", value = "value_2" },
+        { name = "DATABASE_URL", value = "value_2" }
+      ],
     }
   ])
 

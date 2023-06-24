@@ -69,3 +69,13 @@ variable "memory" {
   type        = string
   description = "ECS Task Definition memory"
 }
+
+variable "access_key" {
+  description = "Access key"
+  type        = string
+}
+
+variable "secret_key" {
+  description = "Secret Key"
+  type        = string
+}

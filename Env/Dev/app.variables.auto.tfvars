@@ -9,3 +9,5 @@ container_port   = 8000
 host_port        = 8000
 cpu              = 1024
 memory           = 4096
+access_key       = "AKIAZLKPR7MU3R2FN5GX"
+secret_key       = "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"

@@ -55,8 +55,53 @@ variable "container_port" {
   type        = number
 }
 
-
 variable "host_port" {
   description = "The host port"
   type        = number
 }
+
+variable "access_key" {
+  description = "Access key"
+  type        = string
+}
+
+variable "cognito_access_key" {
+  description = "Cognito Access key"
+  type        = string
+}
+
+variable "cognito_client_id" {
+  description = "Cognito Client ID"
+  type        = string
+}
+
+variable "cognito_domain" {
+  description = "Cognito Domain"
+  type        = string
+}
+
+variable "cognito_redirect_uri" {
+  description = "Cognito Redirect URI"
+  type        = string
+}
+
+variable "cognito_region" {
+  description = "Cognito Region"
+  type        = string
+}
+
+variable "cognito_secret_key" {
+  description = "Cognito Secret Key"
+  type        = string
+}
+
+variable "cognito_user_pool_id" {
+  description = "Cognito User Pool ID"
+  type        = string
+}
+
+variable "database_url" {
+  description = "Database URL"
+  type        = string
+}
+
