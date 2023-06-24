@@ -251,11 +251,11 @@ module "ecs_taks_definition" {
   task_role_arn      = module.ecs_role.arn_role_ecs_task_role
   cpu                = 1026
   memory             = "4096"
-  docker_repo        = "642801335081.dkr.ecr.ap-southeast-2.amazonaws.com/ditto-com-docs-api-staging:6f55e916e142b32bee6a63838c5e765f9e716ab1"
+  docker_repo        = var.docker_image_url
   # docker_repo        = module.ecr.ecr_repository_url
   region         = var.region
-  container_port = 8001
-  host_port      = 8001
+  container_port = var.container_port
+  host_port      = var.host_port
 }
 
 # Creating a Security Group for ECS Task

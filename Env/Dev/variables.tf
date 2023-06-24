@@ -44,3 +44,18 @@ variable "iam_role_name" {
     codedeploy    = "codedeploy-role"
   }
 }
+
+variable "docker_image_url" {
+  type        = string
+  description = "ECS Task Definition Docker Image URL"
+}
+
+variable "container_port" {
+  type        = number
+  description = "ECS Task Definition Container port"
+}
+
+variable "host_port" {
+  type        = number
+  description = "ECS Task Definition Host port"
+}
