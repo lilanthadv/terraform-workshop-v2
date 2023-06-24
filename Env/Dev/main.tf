@@ -73,7 +73,7 @@ module "database" {
   subnets              = module.networking.private_subnets
   security_groups      = [module.security_group_db.id]
   engine               = "aurora-postgresql"
-  engine_version       = "13.6"
+  engine_version       = "14.6"
   engine_mode          = "provisioned"
   database_name        = var.database_name
   master_username      = var.master_username
@@ -83,8 +83,8 @@ module "database" {
   skip_final_snapshot  = true
   enable_http_endpoint = true
   # Scaling Configuration
-  max_capacity = 4.0
-  min_capacity = 2.0
+  max_capacity = 2.0
+  min_capacity = 1.0
   # Encryption Configuration
   storage_encrypted = true
 }
@@ -249,12 +249,13 @@ module "ecs_taks_definition" {
   description        = "ECS Task Definition"
   execution_role_arn = module.ecs_role.arn_role
   task_role_arn      = module.ecs_role.arn_role_ecs_task_role
-  cpu                = 256
-  memory             = "512"
-  docker_repo        = "048102882581.dkr.ecr.ap-southeast-2.amazonaws.com/testapp4"
+  cpu                = 1026
+  memory             = "4096"
+  docker_repo        = "642801335081.dkr.ecr.ap-southeast-2.amazonaws.com/ditto-com-docs-api-staging:6f55e916e142b32bee6a63838c5e765f9e716ab1"
   # docker_repo        = module.ecr.ecr_repository_url
   region         = var.region
-  container_port = 80
+  container_port = 8001
+  host_port=8001
 }
 
 # Creating a Security Group for ECS Task

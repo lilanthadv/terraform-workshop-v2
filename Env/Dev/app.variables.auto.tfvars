@@ -1,4 +1,4 @@
 ### Database
-database_name   = "test"
-master_username = "root"
-master_password = "Root123456"
+database_name   = "diito-prod"
+master_username = "postgres"
+master_password = "czhv87ea2gil_prod"
