@@ -23,7 +23,7 @@ resource "aws_ecs_service" "ecs_service" {
   }
 
   deployment_controller {
-    type = "CODE_DEPLOY"
+    type = "ECS"
   }
 
   lifecycle {
