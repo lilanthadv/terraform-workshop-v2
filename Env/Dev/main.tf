@@ -255,7 +255,7 @@ module "ecs_taks_definition" {
   # docker_repo        = module.ecr.ecr_repository_url
   region         = var.region
   container_port = 8001
-  host_port=8001
+  host_port      = 8001
 }
 
 # Creating a Security Group for ECS Task

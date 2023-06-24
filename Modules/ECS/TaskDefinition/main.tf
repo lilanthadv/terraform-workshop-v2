@@ -25,7 +25,7 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
       "portMappings" : [
         {
           "containerPort" : var.container_port,
-          "hostPort" : var.container_port
+          "hostPort" : var.host_port
         }
       ],
       "logConfiguration" : {
