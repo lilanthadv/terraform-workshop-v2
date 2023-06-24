@@ -190,12 +190,20 @@ module "security_group_alb" {
   name        = "alb-sg"
   description = "Security Group for the ALB"
   vpc         = module.networking.vpc
-  ingress_rules = [{
-    protocol        = "tcp"
-    ingress_port    = var.host_port
-    cidr_blocks     = ["0.0.0.0/0"]
-    security_groups = []
-  }]
+  ingress_rules = [
+    {
+      protocol        = "tcp"
+      ingress_port    = 80
+      cidr_blocks     = ["0.0.0.0/0"]
+      security_groups = []
+    },
+    {
+      protocol        = "tcp"
+      ingress_port    = 443
+      cidr_blocks     = ["0.0.0.0/0"]
+      security_groups = []
+    }
+  ]
 }
 
 # Creating Application ALB
@@ -336,9 +344,9 @@ module "cognito" {
   }
 
   microsoft_configuration = {
-    client_id     = "4b2a6342-3204-40ea-a9b8-f6deda3fa854"
-    client_secret = "f1U8Q~R~w-eje.QAq1~gx1At9ubOGbHLKzjGKbo2"
-    oidc_issuer   = "https://login.microsoftonline.com/b8410e4c-fbf3-4b8b-8e97-ecab19b58cb5/v2.0"
+    client_id                 = "4b2a6342-3204-40ea-a9b8-f6deda3fa854"
+    client_secret             = "f1U8Q~R~w-eje.QAq1~gx1At9ubOGbHLKzjGKbo2"
+    oidc_issuer               = "https://login.microsoftonline.com/b8410e4c-fbf3-4b8b-8e97-ecab19b58cb5/v2.0"
     authorize_scopes          = "profile email openid"
     attributes_request_method = "GET"
   }
