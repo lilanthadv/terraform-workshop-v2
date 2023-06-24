@@ -249,12 +249,13 @@ module "ecs_taks_definition" {
   description        = "ECS Task Definition"
   execution_role_arn = module.ecs_role.arn_role
   task_role_arn      = module.ecs_role.arn_role_ecs_task_role
-  cpu                = 256
+  cpu                = 1
   memory             = "512"
   docker_repo        = "048102882581.dkr.ecr.ap-southeast-2.amazonaws.com/testapp4"
   # docker_repo        = module.ecr.ecr_repository_url
   region         = var.region
-  container_port = 80
+  container_port = 8000
+  host_port      = 49889
 }
 
 # Creating a Security Group for ECS Task

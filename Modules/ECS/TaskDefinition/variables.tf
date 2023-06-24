@@ -54,3 +54,9 @@ variable "container_port" {
   description = "The port that the container will use to listen to requests"
   type        = number
 }
+
+variable "host_port" {
+  description = "The host port"
+  type        = number
+}
+
