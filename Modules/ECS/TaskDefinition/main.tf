@@ -38,15 +38,15 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
         }
       },
       environment = [
-        { name = "ACCESS_KEY", value = "value_2" },
-        { name = "COGNITO_ACCESS_KEY", value = "value_1" },
-        { name = "COGNITO_CLIENT_ID", value = "value_2" },
-        { name = "COGNITO_DOMAIN", value = "value_2" },
-        { name = "COGNITO_REDIRECT_URI", value = "value_2" },
-        { name = "COGNITO_REGION", value = "value_2" },
-        { name = "COGNITO_SECRET_KEY", value = "value_2" },
-        { name = "COGNITO_USER_POOL_ID", value = "value_2" },
-        { name = "DATABASE_URL", value = "value_2" }
+        { name = "ACCESS_KEY", value = var.access_key},
+        { name = "COGNITO_ACCESS_KEY", value =  var.cognito_access_key },
+        { name = "COGNITO_CLIENT_ID", value =  var.cognito_client_id },
+        { name = "COGNITO_DOMAIN", value =  var.cognito_domain },
+        { name = "COGNITO_REDIRECT_URI", value =  var.cognito_redirect_uri },
+        { name = "COGNITO_REGION", value =  var.cognito_region},
+        { name = "COGNITO_SECRET_KEY", value =  var.cognito_secret_key },
+        { name = "COGNITO_USER_POOL_ID", value = var.cognito_user_pool_id },
+        { name = "DATABASE_URL", value =  var.database_url }
       ],
     }
   ])
