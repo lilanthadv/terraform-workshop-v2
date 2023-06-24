@@ -175,12 +175,12 @@ module "target_group" {
   name                = "alb-tg"
   description         = "Target Group for the ALB"
   create_target_group = true
-  port                = 80
+  port                = var.host_port
   protocol            = "HTTP"
   vpc                 = module.networking.vpc
   tg_type             = "ip"
-  health_check_path   = "/"
-  health_check_port   = 80
+  health_check_path   = "/health"
+  health_check_port   = var.host_port
 }
 
 # Creating Security Group for the ALB
@@ -192,7 +192,7 @@ module "security_group_alb" {
   vpc         = module.networking.vpc
   ingress_rules = [{
     protocol        = "tcp"
-    ingress_port    = 80
+    ingress_port    = var.host_port
     cidr_blocks     = ["0.0.0.0/0"]
     security_groups = []
   }]
@@ -267,7 +267,7 @@ module "security_group_ecs_task" {
   vpc         = module.networking.vpc
   ingress_rules = [{
     protocol        = "tcp"
-    ingress_port    = 80
+    ingress_port    = var.host_port
     cidr_blocks     = ["0.0.0.0/0"]
     security_groups = [module.security_group_alb.id]
   }]
@@ -294,7 +294,7 @@ module "ecs_service" {
   arn_target_group    = module.target_group.arn_tg
   arn_task_definition = module.ecs_taks_definition.arn_task_definition
   subnets             = module.networking.private_subnets
-  container_port      = 80
+  container_port      = var.host_port
   container_name      = module.ecs_taks_definition.container_name
 }
 
