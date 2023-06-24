@@ -213,6 +213,7 @@ module "alb" {
   name                = "alb"
   description         = "Application ALB"
   create_alb          = true
+  enable_https        = true
   subnets             = module.networking.public_subnets
   security_group      = module.security_group_alb.id
   target_group        = module.target_group.arn_tg
