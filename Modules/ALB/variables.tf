@@ -96,3 +96,8 @@ variable "health_check_port" {
   type        = number
   default     = 80
 }
+
+variable "ssl_certificate_arn" {
+  description = "SSL Certificate ARN"
+  type        = string
+}

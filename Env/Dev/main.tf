@@ -208,14 +208,15 @@ module "security_group_alb" {
 
 # Creating Application ALB
 module "alb" {
-  source         = "../../Modules/ALB"
-  service        = local.service
-  name           = "alb"
-  description    = "Application ALB"
-  create_alb     = true
-  subnets        = module.networking.public_subnets
-  security_group = module.security_group_alb.id
-  target_group   = module.target_group.arn_tg
+  source              = "../../Modules/ALB"
+  service             = local.service
+  name                = "alb"
+  description         = "Application ALB"
+  create_alb          = true
+  subnets             = module.networking.public_subnets
+  security_group      = module.security_group_alb.id
+  target_group        = module.target_group.arn_tg
+  ssl_certificate_arn = "arn:aws:acm:ap-southeast-2:642801335081:certificate/266992e2-0f7a-4066-b15f-dae1649522ec"
 }
 
 # ECS Role
