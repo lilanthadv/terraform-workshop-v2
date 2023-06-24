@@ -148,7 +148,7 @@ module "bastion_host" {
   availability_zone           = local.availability_zones[0]
   user_data                   = file("./bastion_host_user_data.sh")
   associate_elastic_ip        = false
-  key_pair_name               = "bastion_host_key"
+  key_pair_name               = "bastionhost"
 }
 
 # SQS module
@@ -326,23 +326,25 @@ module "cognito" {
   description = "Cognito User Pool"
 
   lambda_config = {
-    pre_sign_up_arn       = ""
-    post_confirmation_arn = ""
+    pre_sign_up_arn       = "arn:aws:lambda:ap-southeast-2:642801335081:function:autoConfirm_ditto_workflow_dev"
+    post_confirmation_arn = "arn:aws:lambda:ap-southeast-2:642801335081:function:work_flow_reset_password_staging"
   }
 
   google_configurations = {
-    client_id     = "your client_id"
-    client_secret = "your client_secret"
+    client_id     = "198930728399-cp287otkh21l80hdjs7bsqe6h2bv7i3b.apps.googleusercontent.com"
+    client_secret = "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"
   }
 
   microsoft_configuration = {
-    client_id     = "your client_id"
-    client_secret = "your client_secret"
+    client_id     = "4b2a6342-3204-40ea-a9b8-f6deda3fa854"
+    client_secret = "f1U8Q~R~w-eje.QAq1~gx1At9ubOGbHLKzjGKbo2"
     oidc_issuer   = "https://login.microsoftonline.com/b8410e4c-fbf3-4b8b-8e97-ecab19b58cb5/v2.0"
+    authorize_scopes          = "profile email openid"
+    attributes_request_method = "GET"
   }
 
   client_configuration = {
-    callback_urls = ["http://localhost:3000/cb", "http://localhost:3001/home", "https://staging.dittoflow.com/cb"]
-    logout_urls   = ["http://localhost:3000/login", "http://localhost:3001/home", "https://example.com/cb", "https://staging.dittoflow.com/login"]
+    callback_urls = ["https://dittoflow.com/home", "https://dittoflow.com/cb"]
+    logout_urls   = ["https://dittoflow.com/login", "https://dittoflow.com/home"]
   }
 }
