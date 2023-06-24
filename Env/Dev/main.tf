@@ -247,8 +247,8 @@ module "ecs_taks_definition" {
   description        = "ECS Task Definition"
   execution_role_arn = module.ecs_role.arn_role
   task_role_arn      = module.ecs_role.arn_role_ecs_task_role
-  cpu                = 1026
-  memory             = "4096"
+  cpu                = var.cpu
+  memory             = var.memory
   docker_repo        = var.docker_image_url
   # docker_repo        = module.ecr.ecr_repository_url
   region         = var.region

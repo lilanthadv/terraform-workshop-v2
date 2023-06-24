@@ -59,3 +59,13 @@ variable "host_port" {
   type        = number
   description = "ECS Task Definition Host port"
 }
+
+variable "cpu" {
+  type        = string
+  description = "ECS Task Definition cpu"
+}
+
+variable "memory" {
+  type        = string
+  description = "ECS Task Definition memory"
+}
