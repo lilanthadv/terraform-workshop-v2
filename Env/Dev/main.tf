@@ -218,9 +218,7 @@ module "ecs_role" {
   name_ecs_task_role = var.iam_role_name["ecs_task_role"]
   description        = "ECS Role"
   create_ecs_role    = true
-
-  database = ["*"]
-  # database           = [module.database.database_arn]
+  database           = [module.database.database_arn]
 }
 
 # Creating a IAM Policy for role
