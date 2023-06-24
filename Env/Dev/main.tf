@@ -54,12 +54,12 @@ module "security_group_db" {
       cidr_blocks     = ["0.0.0.0/0"]
       security_groups = [module.security_group_bastion_host.id]
     },
-    # {
-    #   protocol        = "tcp"
-    #   ingress_port    = 5432
-    #   cidr_blocks     = ["0.0.0.0/0"]
-    #   security_groups = [module.security_group_ecs_task.id]
-    # }
+    {
+      protocol        = "tcp"
+      ingress_port    = 5432
+      cidr_blocks     = ["0.0.0.0/0"]
+      security_groups = [module.security_group_ecs_task.id]
+    }
   ]
 }
 
