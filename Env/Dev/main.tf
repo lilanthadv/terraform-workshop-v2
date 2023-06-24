@@ -313,8 +313,8 @@ module "ecs_autoscaling" {
 module "s3" {
   source            = "../../Modules/S3"
   service           = local.service
-  name              = "s3"
-  description       = "S3 Bucket"
+  name              = "web-s3"
+  description       = "S3 Bucket for front-end app"
   enable_versioning = false
 }
 
