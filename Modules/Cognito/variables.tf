@@ -73,44 +73,8 @@ variable "client_configuration" {
   description = "Cognito User Pool Client Configurations"
 
   type = object({
-    name                          = optional(string)
-    generate_secret               = optional(bool)
-    refresh_token_validity        = optional(number)
-    access_token_validity         = optional(number)
-    id_token_validity             = optional(number)
-    enable_token_revocation       = optional(bool)
-    prevent_user_existence_errors = optional(string)
-    explicit_auth_flows           = optional(list(string))
-    callback_urls                 = list(string)
-    logout_urls                   = list(string)
-    supported_identity_providers  = optional(list(string))
-    allowed_oauth_flows           = optional(list(string))
-    allowed_oauth_scopes          = optional(list(string))
+    callback_urls = list(string)
+    logout_urls   = list(string)
   })
-
-  default = {
-    generate_secret               = false
-    refresh_token_validity        = 30
-    access_token_validity         = 1
-    id_token_validity             = 1
-    enable_token_revocation       = true
-    prevent_user_existence_errors = "ENABLED"
-    explicit_auth_flows = [
-      "ALLOW_ADMIN_USER_PASSWORD_AUTH",
-      "ALLOW_CUSTOM_AUTH",
-      "ALLOW_REFRESH_TOKEN_AUTH",
-      "ALLOW_USER_SRP_AUTH",
-    ]
-    callback_urls                = null
-    logout_urls                  = null
-    supported_identity_providers = ["COGNITO", "Google", "Microsoft"]
-    allowed_oauth_flows          = ["code"]
-    allowed_oauth_scopes         = ["aws.cognito.signin.user.admin", "openid", "email", "profile"]
-  }
-
-  validation {
-    condition     = var.client_configuration.callback_urls != null && var.client_configuration.logout_urls != null
-    error_message = "callback_urls and logout_urls are mandatory."
-  }
 }
 

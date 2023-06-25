@@ -65,28 +65,36 @@ resource "aws_cognito_user_pool" "user_pool" {
 
 # Cognito User Pool Client
 resource "aws_cognito_user_pool_client" "client" {
-  name = coalesce(var.client_configuration.name, "${var.service.resource_name_prefix}-${var.name}-client")
+
+  depends_on = [aws_cognito_user_pool.user_pool, aws_cognito_identity_provider.google, aws_cognito_identity_provider.microsoft]
+
+  name = "${var.service.resource_name_prefix}-${var.name}-client"
 
   user_pool_id    = aws_cognito_user_pool.user_pool.id
-  generate_secret = var.client_configuration.generate_secret
+  generate_secret = false
 
-  refresh_token_validity = var.client_configuration.refresh_token_validity
-  access_token_validity  = var.client_configuration.access_token_validity
-  id_token_validity      = var.client_configuration.id_token_validity
+  refresh_token_validity = 30
+  access_token_validity  = 1
+  id_token_validity      = 1
 
-  enable_token_revocation       = var.client_configuration.enable_token_revocation
-  prevent_user_existence_errors = var.client_configuration.prevent_user_existence_errors
-
-  explicit_auth_flows = var.client_configuration.explicit_auth_flows
+  enable_token_revocation       = true
+  prevent_user_existence_errors = "ENABLED"
 
   callback_urls = var.client_configuration.callback_urls
   logout_urls   = var.client_configuration.logout_urls
 
-  supported_identity_providers = var.client_configuration.supported_identity_providers
+  explicit_auth_flows = [
+    "ALLOW_ADMIN_USER_PASSWORD_AUTH",
+    "ALLOW_CUSTOM_AUTH",
+    "ALLOW_REFRESH_TOKEN_AUTH",
+    "ALLOW_USER_SRP_AUTH",
+  ]
 
-  allowed_oauth_flows = var.client_configuration.allowed_oauth_flows
+  supported_identity_providers = ["COGNITO", "Google", "Microsoft"]
 
-  allowed_oauth_scopes = var.client_configuration.allowed_oauth_scopes
+  allowed_oauth_flows = ["code"]
+
+  allowed_oauth_scopes = ["aws.cognito.signin.user.admin", "openid", "email", "profile"]
 }
 
 # Cognito User Pool Domain
