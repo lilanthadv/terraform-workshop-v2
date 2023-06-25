@@ -347,7 +347,7 @@ module "cognito" {
 
   lambda_config = {
     pre_sign_up_arn       = "arn:aws:lambda:ap-southeast-2:642801335081:function:autoConfirm_ditto_workflow_dev"
-    post_confirmation_arn = "arn:aws:lambda:ap-southeast-2:642801335081:function:work_flow_reset_password_staging"
+    custom_message_arn = "arn:aws:lambda:ap-southeast-2:642801335081:function:work_flow_reset_password_staging"
   }
 
   google_configurations = {
