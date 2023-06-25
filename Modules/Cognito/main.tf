@@ -8,10 +8,6 @@ resource "aws_cognito_user_pool" "user_pool" {
 
   username_attributes = var.username_attributes
 
-  password_policy {
-    minimum_length = 6
-  }
-
   lambda_config {
     pre_sign_up    = var.lambda_config.pre_sign_up_arn
     custom_message = var.lambda_config.custom_message_arn
