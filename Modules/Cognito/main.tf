@@ -6,19 +6,18 @@
 resource "aws_cognito_user_pool" "user_pool" {
   name = "${var.service.resource_name_prefix}-${var.name}"
 
-  username_attributes      = var.username_attributes
-  auto_verified_attributes = var.auto_verified_attributes
+  username_attributes = var.username_attributes
 
   password_policy {
     minimum_length = 6
   }
 
-  verification_message_template {
-    default_email_option = "CONFIRM_WITH_CODE"
-    email_subject        = "Account Confirmation"
-    email_message        = "Your confirmation code is {####}"
+  lambda_config {
+    pre_sign_up    = var.lambda_config.pre_sign_up_arn
+    custom_message = var.lambda_config.custom_message_arn
   }
 
+  # Predefined attribute
   schema {
     name                     = "email"
     attribute_data_type      = "String"
@@ -32,9 +31,30 @@ resource "aws_cognito_user_pool" "user_pool" {
     }
   }
 
-  lambda_config {
-    pre_sign_up       = var.lambda_config.pre_sign_up_arn
-    post_confirmation = var.lambda_config.post_confirmation_arn
+  # Custom attribute
+  schema {
+    name                     = "firstName"
+    attribute_data_type      = "String"
+    developer_only_attribute = false
+    mutable                  = true
+    required                 = false
+    string_attribute_constraints {
+      min_length = 1
+      max_length = 256
+    }
+  }
+
+  schema {
+    name                     = "lastName"
+    attribute_data_type      = "String"
+    developer_only_attribute = false
+    mutable                  = true
+    required                 = false
+
+    string_attribute_constraints {
+      min_length = 1
+      max_length = 256
+    }
   }
 
   tags = {

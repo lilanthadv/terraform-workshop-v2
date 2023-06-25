@@ -25,16 +25,11 @@ variable "username_attributes" {
   default     = ["email"]
 }
 
-variable "auto_verified_attributes" {
-  type        = list(string)
-  description = "The Auto Verified Attributes"
-  default     = ["email"]
-}
 
 variable "lambda_config" {
   type = object({
-    pre_sign_up_arn       = string
-    post_confirmation_arn = string
+    pre_sign_up_arn    = string
+    custom_message_arn = string
   })
   description = "Lambda Config"
 }
