@@ -268,12 +268,18 @@ module "ecs_taks_definition" {
   access_key           = var.access_key
   cognito_access_key   = var.access_key
   cognito_client_id    = module.cognito.client_id
-  cognito_domain       = module.cognito.domain
+  cognito_domain       = "https://${module.cognito.domain}.auth.${var.region}.amazoncognito.com"
   cognito_redirect_uri = "https://dittoflow.com/cb"
   cognito_region       = var.region
   cognito_secret_key   = var.secret_key
   cognito_user_pool_id = module.cognito.id
   database_url         = "postgresql://${var.master_username}:${var.master_password}@${module.database.proxy_endpoint}"
+  frontend_url         = "https://dittoflow.com"
+  jwt_iss              = "https://${module.cognito.endpoint}"
+  port                 = var.host_port
+  secret_key           = var.secret_key
+  ses_email            = "no-reply@dittosoftware.com"
+  sqs_queue_url        = module.sqs.queue_url
 }
 
 # Creating a Security Group for ECS Task
@@ -346,7 +352,7 @@ module "cognito" {
   description = "Cognito User Pool"
 
   lambda_config = {
-    pre_sign_up_arn       = "arn:aws:lambda:ap-southeast-2:642801335081:function:autoConfirm_ditto_workflow_dev"
+    pre_sign_up_arn    = "arn:aws:lambda:ap-southeast-2:642801335081:function:autoConfirm_ditto_workflow_dev"
     custom_message_arn = "arn:aws:lambda:ap-southeast-2:642801335081:function:work_flow_reset_password_staging"
   }
 

@@ -105,3 +105,32 @@ variable "database_url" {
   type        = string
 }
 
+variable "frontend_url" {
+  description = "Frontend URL"
+  type        = string
+}
+
+variable "jwt_iss" {
+  description = "JWT ISS"
+  type        = string
+}
+
+variable "port" {
+  description = "Port"
+  type        = string
+}
+
+variable "secret_key" {
+  description = "Secret Key"
+  type        = string
+}
+
+variable "ses_email" {
+  description = "SES Email"
+  type        = string
+}
+
+variable "sqs_queue_url" {
+  description = "SQS Queue URL"
+  type        = string
+}

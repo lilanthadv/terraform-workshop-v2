@@ -38,15 +38,21 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
         }
       },
       environment = [
-        { name = "ACCESS_KEY", value = var.access_key},
-        { name = "COGNITO_ACCESS_KEY", value =  var.cognito_access_key },
-        { name = "COGNITO_CLIENT_ID", value =  var.cognito_client_id },
-        { name = "COGNITO_DOMAIN", value =  var.cognito_domain },
-        { name = "COGNITO_REDIRECT_URI", value =  var.cognito_redirect_uri },
-        { name = "COGNITO_REGION", value =  var.cognito_region},
-        { name = "COGNITO_SECRET_KEY", value =  var.cognito_secret_key },
+        { name = "ACCESS_KEY", value = var.access_key },
+        { name = "COGNITO_ACCESS_KEY", value = var.cognito_access_key },
+        { name = "COGNITO_CLIENT_ID", value = var.cognito_client_id },
+        { name = "COGNITO_DOMAIN", value = var.cognito_domain },
+        { name = "COGNITO_REDIRECT_URI", value = var.cognito_redirect_uri },
+        { name = "COGNITO_REGION", value = var.cognito_region },
+        { name = "COGNITO_SECRET_KEY", value = var.cognito_secret_key },
         { name = "COGNITO_USER_POOL_ID", value = var.cognito_user_pool_id },
-        { name = "DATABASE_URL", value =  var.database_url }
+        { name = "DATABASE_URL", value = var.database_url },
+        { name = "FRONT_END_URL", value = var.frontend_url },
+        { name = "JWT_ISS", value = var.jwt_iss },
+        { name = "PORT", value = var.port },
+        { name = "SECRET_KEY", value = var.secret_key },
+        { name = "SES_EMAIL", value = var.ses_email },
+        { name = "SQS_QUEUE_URL", value = var.sqs_queue_url }
       ],
     }
   ])
