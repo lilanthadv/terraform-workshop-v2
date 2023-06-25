@@ -268,7 +268,7 @@ module "ecs_taks_definition" {
   access_key           = var.access_key
   cognito_access_key   = var.access_key
   cognito_client_id    = module.cognito.client_id
-  cognito_domain       = "https://${module.cognito.domain}.auth.${var.region}.amazoncognito.com"
+  cognito_domain       = "https://${module.cognito.domain}.auth.${var.region}.amazoncognito.com/oauth2/token"
   cognito_redirect_uri = "https://dittoflow.com/cb"
   cognito_region       = var.region
   cognito_secret_key   = var.secret_key
