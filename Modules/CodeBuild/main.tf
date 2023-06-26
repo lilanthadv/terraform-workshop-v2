@@ -35,8 +35,9 @@ resource "aws_codebuild_project" "codebuild" {
   }
 
   source {
-    type     = var.git_source.git_source_type
-    location = var.git_source.git_repository_url
+    type            = var.git_source.git_source_type
+    location        = var.git_source.git_repository_url
+    git_clone_depth = 1
   }
 
   source_version = "master"
