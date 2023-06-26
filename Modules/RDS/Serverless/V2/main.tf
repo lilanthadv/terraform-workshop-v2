@@ -18,6 +18,7 @@ resource "aws_kms_key" "rds_encryption_key" {
     Environment = var.service.app_environment
     Version     = var.service.app_version
     User        = var.service.user
+    Terraform   = true
   }
 }
 
@@ -58,6 +59,7 @@ resource "aws_rds_cluster" "db_cluster" {
     Environment = var.service.app_environment
     Version     = var.service.app_version
     User        = var.service.user
+    Terraform   = true
   }
 }
 
@@ -75,6 +77,7 @@ resource "aws_rds_cluster_instance" "db_instance" {
     Environment = var.service.app_environment
     Version     = var.service.app_version
     User        = var.service.user
+    Terraform   = true
   }
 }
 
@@ -91,5 +94,6 @@ resource "aws_db_subnet_group" "db_subnet_group" {
     Environment = var.service.app_environment
     Version     = var.service.app_version
     User        = var.service.user
+    Terraform   = true
   }
 }

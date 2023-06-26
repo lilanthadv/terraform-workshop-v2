@@ -25,6 +25,7 @@ resource "aws_sqs_queue" "queue" {
     Environment = var.service.app_environment
     Version     = var.service.app_version
     User        = var.service.user
+    Terraform   = true
   }
 }
 

@@ -33,8 +33,8 @@ variable "create_ecs_role" {
 }
 
 
-variable "create_devops_role" {
-  description = "Set this variable to true if you want to create a role for AWS DevOps Tools"
+variable "create_codebuild_role" {
+  description = "Set this variable to true if you want to create a role for Codebuild"
   type        = bool
   default     = false
 }
@@ -45,8 +45,8 @@ variable "create_codedeploy_role" {
   default     = false
 }
 
-variable "create_devops_policy" {
-  description = "Set this variable to true if you want to create a policy for AWS DevOps Tools"
+variable "create_codebuild_policy" {
+  description = "Set this variable to true if you want to create a policy for Codebuild"
   type        = bool
   default     = false
 }

@@ -79,3 +79,28 @@ variable "secret_key" {
   description = "Secret Key"
   type        = string
 }
+
+variable "git_source_type" {
+  description = "Git Source Type"
+  type        = string
+}
+
+variable "git_repository_url" {
+  description = "Git Repository URL"
+  type        = string
+}
+
+variable "git_connection_arn" {
+  description = "Git Connection ARN"
+  type        = string
+}
+
+variable "git_repository_id" {
+  description = "Git Repository Id"
+  type        = string
+}
+
+variable "git_branch_name" {
+  description = "Git Branch Name"
+  type        = string
+}

@@ -18,3 +18,9 @@ variable "description" {
   type        = string
   description = "The description"
 }
+
+variable "ecr_repository_image_tag_mutability" {
+  type        = string
+  description = "ECR Repository Image Tag Mutability"
+  default     = "MUTABLE"
+}

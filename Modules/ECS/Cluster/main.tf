@@ -13,5 +13,6 @@ resource "aws_ecs_cluster" "ecs_cluster" {
     Environment = var.service.app_environment
     Version     = var.service.app_version
     User        = var.service.user
+    Terraform   = true
   }
 }

@@ -102,3 +102,69 @@ variable "ssl_certificate_arn" {
   type        = string
   default     = null
 }
+
+variable "load_balancer_type" {
+  description = "Load Balancer Type"
+  type        = string
+  default     = "application"
+}
+
+variable "load_balancer_internal" {
+  description = "Load Balancer Internal"
+  type        = bool
+  default     = false
+}
+
+variable "load_balancer_enable_http2" {
+  description = "Load Balancer Enable http2"
+  type        = bool
+  default     = true
+}
+
+variable "load_balancer_idle_timeout" {
+  description = "Load Balancer Idle Timeout"
+  type        = number
+  default     = 30
+}
+
+variable "alb_target_group_deregistration_delay" {
+  description = "ALB Target Group Deregistration Delay"
+  type        = number
+  default     = 5
+}
+
+variable "alb_target_group_health_check_enabled" {
+  description = "ALB Target Group Health Check Enabled"
+  type        = bool
+  default     = true
+}
+
+variable "alb_target_group_health_check_interval" {
+  description = "ALB Target Group Health Check Interval"
+  type        = number
+  default     = 15
+}
+
+variable "alb_target_group_health_check_timeout" {
+  description = "ALB Target Group Health Check Timeout"
+  type        = number
+  default     = 10
+}
+
+variable "alb_target_group_health_check_healthy_threshold" {
+  description = "ALB Target Group Health Check Healthy Threshold"
+  type        = number
+  default     = 2
+}
+
+variable "alb_target_group_health_check_unhealthy_threshold" {
+  description = "ALB Target Group Health Check Unhealthy Threshold"
+  type        = number
+  default     = 3
+}
+
+variable "alb_target_group_health_check_matcher" {
+  description = "ALB Target Group Health Check Matcher"
+  type        = string
+  default     = "200"
+}

@@ -1,14 +1,14 @@
 /*====================================
-        AWS ECS Autoscaling
+  AWS ECS Autoscaling
 =====================================*/
 
-# AWS Autoscaling target to linke the ECS cluster and service
+# AWS Autoscaling Target To Linke The ECS Cluster And Service
 resource "aws_appautoscaling_target" "ecs_target" {
   min_capacity       = var.min_capacity
   max_capacity       = var.max_capacity
   resource_id        = "service/${var.cluster_name}/${var.service_name}"
-  scalable_dimension = "ecs:service:DesiredCount"
-  service_namespace  = "ecs"
+  scalable_dimension = var.appautoscaling_target_scalable_dimension
+  service_namespace  = var.appautoscaling_target_service_namespace
 
   lifecycle {
     ignore_changes = [
@@ -23,10 +23,11 @@ resource "aws_appautoscaling_target" "ecs_target" {
     Environment = var.service.app_environment
     Version     = var.service.app_version
     User        = var.service.user
+    Terraform   = true
   }
 }
 
-# AWS Autoscaling policy using CPU allocation
+# AWS Autoscaling Policy Using CPU Allocation
 resource "aws_appautoscaling_policy" "cpu" {
   name               = "${var.service.resource_name_prefix}-${var.name}-policy-cpu"
   resource_id        = aws_appautoscaling_target.ecs_target.resource_id
@@ -45,7 +46,7 @@ resource "aws_appautoscaling_policy" "cpu" {
   }
 }
 
-# AWS Autoscaling policy using memory allocation
+# AWS Autoscaling Policy Using Memory Allocation
 resource "aws_appautoscaling_policy" "memory" {
   name               = "${var.service.resource_name_prefix}-${var.name}-policy-memory"
   resource_id        = aws_appautoscaling_target.ecs_target.resource_id
@@ -68,7 +69,7 @@ resource "aws_appautoscaling_policy" "memory" {
         AWS Cloudwatch for ECS Autoscaling
 ===============================================*/
 
-# High memory alarm
+# High Memory Alarm
 resource "aws_cloudwatch_metric_alarm" "high-memory-policy-alarm" {
   alarm_name          = "${var.service.resource_name_prefix}-${var.name}-cloudwatch-high-memory-alarm"
   alarm_description   = "High Memory for ecs service-${var.service_name}"
@@ -92,10 +93,11 @@ resource "aws_cloudwatch_metric_alarm" "high-memory-policy-alarm" {
     Environment = var.service.app_environment
     Version     = var.service.app_version
     User        = var.service.user
+    Terraform   = true
   }
 }
 
-# High CPU alarm
+# High CPU Alarm
 resource "aws_cloudwatch_metric_alarm" "high-cpu-policy-alarm" {
   alarm_name          = "${var.service.resource_name_prefix}-${var.name}-cloudwatch-high-cpu-alarm"
   alarm_description   = "High CPUPolicy Landing Page for ecs service-${var.service_name}"
@@ -119,5 +121,6 @@ resource "aws_cloudwatch_metric_alarm" "high-cpu-policy-alarm" {
     Environment = var.service.app_environment
     Version     = var.service.app_version
     User        = var.service.user
+    Terraform   = true
   }
 }

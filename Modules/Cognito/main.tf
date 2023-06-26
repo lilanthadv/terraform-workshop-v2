@@ -13,43 +13,22 @@ resource "aws_cognito_user_pool" "user_pool" {
     custom_message = var.lambda_config.custom_message_arn
   }
 
-  # Predefined attribute
-  schema {
-    name                     = "email"
-    attribute_data_type      = "String"
-    developer_only_attribute = false
-    mutable                  = true
-    required                 = true
+  dynamic "schema" {
+    for_each = var.schema_attributes
+    content {
+      name                     = schema.value["name"]
+      attribute_data_type      = schema.value["attribute_data_type"]
+      developer_only_attribute = schema.value["developer_only_attribute"]
+      mutable                  = schema.value["mutable"]
+      required                 = schema.value["required"]
 
-    string_attribute_constraints {
-      min_length = 1
-      max_length = 256
-    }
-  }
-
-  # Custom attribute
-  schema {
-    name                     = "firstName"
-    attribute_data_type      = "String"
-    developer_only_attribute = false
-    mutable                  = true
-    required                 = false
-    string_attribute_constraints {
-      min_length = 1
-      max_length = 256
-    }
-  }
-
-  schema {
-    name                     = "lastName"
-    attribute_data_type      = "String"
-    developer_only_attribute = false
-    mutable                  = true
-    required                 = false
-
-    string_attribute_constraints {
-      min_length = 1
-      max_length = 256
+      dynamic "string_attribute_constraints" {
+        for_each = [schema.value["string_attribute_constraints"]]
+        content {
+          min_length = string_attribute_constraints.value["min_length"]
+          max_length = string_attribute_constraints.value["max_length"]
+        }
+      }
     }
   }
 
@@ -60,6 +39,7 @@ resource "aws_cognito_user_pool" "user_pool" {
     Environment = var.service.app_environment
     Version     = var.service.app_version
     User        = var.service.user
+    Terraform   = true
   }
 }
 
@@ -71,30 +51,25 @@ resource "aws_cognito_user_pool_client" "client" {
   name = "${var.service.resource_name_prefix}-${var.name}-client"
 
   user_pool_id    = aws_cognito_user_pool.user_pool.id
-  generate_secret = false
+  generate_secret = var.cognito_user_pool_client_generate_secret
 
-  refresh_token_validity = 30
-  access_token_validity  = 1
-  id_token_validity      = 1
+  refresh_token_validity = var.cognito_user_pool_client_refresh_token_validity
+  access_token_validity  = var.cognito_user_pool_client_access_token_validity
+  id_token_validity      = var.cognito_user_pool_client_id_token_validity
 
-  enable_token_revocation       = true
-  prevent_user_existence_errors = "ENABLED"
+  enable_token_revocation       = var.cognito_user_pool_client_enable_token_revocation
+  prevent_user_existence_errors = var.cognito_user_pool_client_prevent_user_existence_errors
 
   callback_urls = var.client_configuration.callback_urls
   logout_urls   = var.client_configuration.logout_urls
 
-  explicit_auth_flows = [
-    "ALLOW_ADMIN_USER_PASSWORD_AUTH",
-    "ALLOW_CUSTOM_AUTH",
-    "ALLOW_REFRESH_TOKEN_AUTH",
-    "ALLOW_USER_SRP_AUTH",
-  ]
+  explicit_auth_flows = var.cognito_user_pool_client_explicit_auth_flows
 
-  supported_identity_providers = ["COGNITO", "Google", "Microsoft"]
+  supported_identity_providers = var.cognito_user_pool_supported_identity_providers
 
-  allowed_oauth_flows = ["code"]
+  allowed_oauth_flows = var.cognito_user_pool_allowed_oauth_flows
 
-  allowed_oauth_scopes = ["aws.cognito.signin.user.admin", "openid", "email", "profile"]
+  allowed_oauth_scopes = var.cognito_user_pool_allowed_oauth_scopes
 }
 
 # Cognito User Pool Domain

@@ -29,6 +29,7 @@ EOF
     Environment = var.service.app_environment
     Version     = var.service.app_version
     User        = var.service.user
+    Terraform   = true
   }
 }
 
@@ -65,6 +66,7 @@ EOF
     Environment = var.service.app_environment
     Version     = var.service.app_version
     User        = var.service.user
+    Terraform   = true
   }
 }
 
@@ -92,6 +94,7 @@ resource "aws_secretsmanager_secret" "db_secret" {
     Environment = var.service.app_environment
     Version     = var.service.app_version
     User        = var.service.user
+    Terraform   = true
   }
 }
 
@@ -133,6 +136,7 @@ resource "aws_db_proxy" "db_proxy" {
     Environment = var.service.app_environment
     Version     = var.service.app_version
     User        = var.service.user
+    Terraform   = true
   }
 }
 

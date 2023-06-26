@@ -38,3 +38,15 @@ variable "service_name" {
   description = "The name of the ECS service"
   type        = string
 }
+
+variable "appautoscaling_target_scalable_dimension" {
+  description = "App Auto Scaling Target Scalable Dimension"
+  type        = string
+  default     = "ecs:service:DesiredCount"
+}
+
+variable "appautoscaling_target_service_namespace" {
+  description = "App Auto Scaling Target Service Namespace"
+  type        = string
+  default     = "ecs"
+}

@@ -15,6 +15,7 @@ resource "aws_vpc" "main" {
     Environment = var.service.app_environment
     Version     = var.service.app_version
     User        = var.service.user
+    Terraform   = true
   }
 }
 
@@ -32,6 +33,7 @@ resource "aws_subnet" "public_subnet" {
     Environment = var.service.app_environment
     Version     = var.service.app_version
     User        = var.service.user
+    Terraform   = true
   }
 }
 
@@ -49,6 +51,7 @@ resource "aws_subnet" "private_subnet" {
     Environment = var.service.app_environment
     Version     = var.service.app_version
     User        = var.service.user
+    Terraform   = true
   }
 }
 
@@ -63,6 +66,7 @@ resource "aws_internet_gateway" "internet_gateway" {
     Environment = var.service.app_environment
     Version     = var.service.app_version
     User        = var.service.user
+    Terraform   = true
   }
 }
 
@@ -82,6 +86,7 @@ resource "aws_route_table" "public_route_table" {
     Environment = var.service.app_environment
     Version     = var.service.app_version
     User        = var.service.user
+    Terraform   = true
   }
 }
 
@@ -103,6 +108,7 @@ resource "aws_eip" "nat_gateway_eip" {
     Environment = var.service.app_environment
     Version     = var.service.app_version
     User        = var.service.user
+    Terraform   = true
   }
 }
 
@@ -118,6 +124,7 @@ resource "aws_nat_gateway" "nat_gateway" {
     Environment = var.service.app_environment
     Version     = var.service.app_version
     User        = var.service.user
+    Terraform   = true
   }
 }
 
@@ -137,6 +144,7 @@ resource "aws_route_table" "private_route_table" {
     Environment = var.service.app_environment
     Version     = var.service.app_version
     User        = var.service.user
+    Terraform   = true
   }
 }
 

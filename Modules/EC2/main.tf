@@ -5,7 +5,7 @@
 # Key Pair for EC2 Instance
 data "aws_key_pair" "instance_key" {
   key_name           = var.key_pair_name
-  include_public_key = true
+  include_public_key = var.ec2_key_pair_include_public_key
 }
 
 # AWS Instance
@@ -28,13 +28,14 @@ resource "aws_instance" "instance" {
     Environment = var.service.app_environment
     Version     = var.service.app_version
     User        = var.service.user
+    Terraform   = true
   }
 }
 
 # AWS EIP
 resource "aws_eip" "bastion_host" {
   count    = var.associate_elastic_ip ? 1 : 0
-  domain   = "vpc"
+  domain   = var.ec2_eip_domain
   instance = aws_instance.instance.id
 
   tags = {
@@ -44,5 +45,6 @@ resource "aws_eip" "bastion_host" {
     Environment = var.service.app_environment
     Version     = var.service.app_version
     User        = var.service.user
+    Terraform   = true
   }
 }

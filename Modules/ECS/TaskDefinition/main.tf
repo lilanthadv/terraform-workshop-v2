@@ -9,8 +9,8 @@ locals {
 # AWS ECS Task Definition
 resource "aws_ecs_task_definition" "ecs_task_definition" {
   family                   = "${var.service.resource_name_prefix}-${var.name}"
-  network_mode             = "awsvpc"
-  requires_compatibilities = ["FARGATE"]
+  network_mode             = var.ecs_task_definition_network_mode
+  requires_compatibilities = var.ecs_task_definition_requires_compatibilities
   cpu                      = var.cpu
   memory                   = var.memory
   execution_role_arn       = var.execution_role_arn
@@ -18,10 +18,10 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
 
   container_definitions = jsonencode([
     {
-      "name" : "${local.container_name}",
-      "image" : "${var.docker_repo}",
-      "cpu" : 0,
-      "networkMode" : "awsvpc",
+      "name" : local.container_name,
+      "image" : var.docker_repo,
+      "cpu" : var.ecs_task_definition_container_definitions_cpu,
+      "networkMode" : var.ecs_task_definition_container_definitions_networkMode,
       "portMappings" : [
         {
           "containerPort" : var.container_port,
@@ -29,31 +29,15 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
         }
       ],
       "logConfiguration" : {
-        "logDriver" : "awslogs",
-        "secretOptions" : null,
+        "logDriver" : var.ecs_task_definition_container_definitions_logConfiguration_logDriver,
+        "secretOptions" : var.ecs_task_definition_container_definitions_logConfiguration_secretOptions,
         "options" : {
           "awslogs-group" : "/ecs/${var.service.resource_name_prefix}-${var.name}",
-          "awslogs-region" : "${var.region}",
-          "awslogs-stream-prefix" : "ecs"
+          "awslogs-region" : var.region,
+          "awslogs-stream-prefix" : var.ecs_task_definition_container_definitions_logConfiguration_options_awslogs_stream_prefix
         }
       },
-      environment = [
-        { name = "ACCESS_KEY", value = var.access_key },
-        { name = "COGNITO_ACCESS_KEY", value = var.cognito_access_key },
-        { name = "COGNITO_CLIENT_ID", value = var.cognito_client_id },
-        { name = "COGNITO_DOMAIN", value = var.cognito_domain },
-        { name = "COGNITO_REDIRECT_URI", value = var.cognito_redirect_uri },
-        { name = "COGNITO_REGION", value = var.cognito_region },
-        { name = "COGNITO_SECRET_KEY", value = var.cognito_secret_key },
-        { name = "COGNITO_USER_POOL_ID", value = var.cognito_user_pool_id },
-        { name = "DATABASE_URL", value = var.database_url },
-        { name = "FRONT_END_URL", value = var.frontend_url },
-        { name = "JWT_ISS", value = var.jwt_iss },
-        { name = "PORT", value = var.port },
-        { name = "SECRET_KEY", value = var.secret_key },
-        { name = "SES_EMAIL", value = var.ses_email },
-        { name = "SQS_QUEUE_URL", value = var.sqs_queue_url }
-      ],
+      environment = var.environment_variables
     }
   ])
 
@@ -64,6 +48,7 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
     Environment = var.service.app_environment
     Version     = var.service.app_version
     User        = var.service.user
+    Terraform   = true
   }
 }
 
@@ -79,5 +64,6 @@ resource "aws_cloudwatch_log_group" "TaskDF-Log_Group" {
     Environment = var.service.app_environment
     Version     = var.service.app_version
     User        = var.service.user
+    Terraform   = true
   }
 }

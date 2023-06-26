@@ -33,6 +33,7 @@ EOF
     Environment = var.service.app_environment
     Version     = var.service.app_version
     User        = var.service.user
+    Terraform   = true
   }
 }
 
@@ -67,12 +68,13 @@ EOF
     Environment = var.service.app_environment
     Version     = var.service.app_version
     User        = var.service.user
+    Terraform   = true
   }
 }
 
 # Devops Role
 resource "aws_iam_role" "devops_role" {
-  count              = var.create_devops_role == true ? 1 : 0
+  count              = var.create_codebuild_role == true ? 1 : 0
   name               = "${var.service.resource_name_prefix}-${var.name}"
   assume_role_policy = <<EOF
 {
@@ -104,6 +106,7 @@ EOF
     Environment = var.service.app_environment
     Version     = var.service.app_version
     User        = var.service.user
+    Terraform   = true
   }
 }
 
@@ -134,14 +137,15 @@ EOF
     Environment = var.service.app_environment
     Version     = var.service.app_version
     User        = var.service.user
+    Terraform   = true
   }
 }
 
 # IAM Policies
 resource "aws_iam_policy" "policy_for_role" {
-  count       = var.create_devops_policy == true ? 1 : 0
+  count       = var.create_codebuild_policy == true ? 1 : 0
   name        = "${var.service.resource_name_prefix}-${var.name}-policy"
-  description = "IAM Policy for Role ${var.name}"
+  description = var.description
   policy      = data.aws_iam_policy_document.role_policy_devops_role.json
 
   lifecycle {
@@ -150,11 +154,12 @@ resource "aws_iam_policy" "policy_for_role" {
 
   tags = {
     Name        = "${var.service.resource_name_prefix}-${var.name}-policy"
-    Description = "IAM Policy for Role ${var.name}"
+    Description = var.description
     Service     = var.service.app_name
     Environment = var.service.app_environment
     Version     = var.service.app_version
     User        = var.service.user
+    Terraform   = true
   }
 }
 
@@ -162,7 +167,7 @@ resource "aws_iam_policy" "policy_for_role" {
 resource "aws_iam_policy" "policy_for_ecs_task_role" {
   count       = var.create_ecs_role == true ? 1 : 0
   name        = "${var.service.resource_name_prefix}-${var.name_ecs_task_role}-policy"
-  description = "IAM Policy for Role ${var.name_ecs_task_role}"
+  description = var.description
   policy      = data.aws_iam_policy_document.role_policy_ecs_task_role.json
 
   lifecycle {
@@ -171,11 +176,12 @@ resource "aws_iam_policy" "policy_for_ecs_task_role" {
 
   tags = {
     Name        = "${var.service.resource_name_prefix}-${var.name_ecs_task_role}-policy"
-    Description = "IAM Policy for Role ${var.name_ecs_task_role}"
+    Description = var.description
     Service     = var.service.app_name
     Environment = var.service.app_environment
     Version     = var.service.app_version
     User        = var.service.user
+    Terraform   = true
   }
 }
 
@@ -201,7 +207,7 @@ resource "aws_iam_role_policy_attachment" "attachment" {
 }
 
 resource "aws_iam_role_policy_attachment" "attachment2" {
-  count      = var.create_devops_policy == true ? 1 : 0
+  count      = var.create_codebuild_policy == true ? 1 : 0
   policy_arn = aws_iam_policy.policy_for_role[0].arn
   role       = var.attach_to
 
@@ -249,19 +255,6 @@ data "aws_iam_policy_document" "role_policy_devops_role" {
       "codebuild:ListBuilds"
     ]
     resources = ["*"]
-  }
-  statement {
-    sid    = "AllowCodeDeployActions"
-    effect = "Allow"
-    actions = [
-      "codedeploy:CreateDeployment",
-      "codedeploy:GetApplication",
-      "codedeploy:GetApplicationRevision",
-      "codedeploy:GetDeployment",
-      "codedeploy:GetDeploymentGroup",
-      "codedeploy:RegisterApplicationRevision"
-    ]
-    resources = var.code_deploy_resources
   }
   statement {
     sid    = "AllowCodeDeployConfigs"
@@ -343,6 +336,14 @@ data "aws_iam_policy_document" "role_policy_devops_role" {
       "logs:CreateLogGroup",
       "logs:CreateLogStream",
       "logs:PutLogEvents"
+    ]
+    resources = ["*"]
+  }
+  statement {
+    sid    = "AllowConnectionActions"
+    effect = "Allow"
+    actions = [
+      "codestar-connections:UseConnection"
     ]
     resources = ["*"]
   }

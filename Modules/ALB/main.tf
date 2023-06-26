@@ -1,5 +1,5 @@
 /*==============================================================
-      AWS Application Load Balancer + Target groups
+  AWS Application Load Balancer + Target groups
 ===============================================================*/
 
 # ALB
@@ -8,10 +8,10 @@ resource "aws_alb" "alb" {
   name               = "${var.service.resource_name_prefix}-${var.name}"
   subnets            = [var.subnets[0], var.subnets[1]]
   security_groups    = [var.security_group]
-  load_balancer_type = "application"
-  internal           = false
-  enable_http2       = true
-  idle_timeout       = 30
+  load_balancer_type = var.load_balancer_type
+  internal           = var.load_balancer_internal
+  enable_http2       = var.load_balancer_enable_http2
+  idle_timeout       = var.load_balancer_idle_timeout
 
   tags = {
     Name        = "${var.service.resource_name_prefix}-${var.name}"
@@ -20,6 +20,7 @@ resource "aws_alb" "alb" {
     Environment = var.service.app_environment
     Version     = var.service.app_version
     User        = var.service.user
+    Terraform   = true
   }
 }
 
@@ -62,23 +63,23 @@ resource "aws_alb_listener" "http_listener" {
 # Target Groups for ALB
 resource "aws_alb_target_group" "target_group" {
   count                = var.create_target_group == true ? 1 : 0
-  name                 = "${var.service.resource_name_prefix}-${var.name}-tg"
+  name                 = "${var.service.resource_name_prefix}-${var.name}"
   port                 = var.port
   protocol             = var.protocol
   vpc_id               = var.vpc
   target_type          = var.tg_type
-  deregistration_delay = 5
+  deregistration_delay = var.alb_target_group_deregistration_delay
 
   health_check {
-    enabled             = true
-    interval            = 15
+    enabled             = var.alb_target_group_health_check_enabled
+    interval            = var.alb_target_group_health_check_interval
     path                = var.health_check_path
     port                = var.health_check_port
     protocol            = var.protocol
-    timeout             = 10
-    healthy_threshold   = 2
-    unhealthy_threshold = 3
-    matcher             = "200"
+    timeout             = var.alb_target_group_health_check_timeout
+    healthy_threshold   = var.alb_target_group_health_check_healthy_threshold
+    unhealthy_threshold = var.alb_target_group_health_check_unhealthy_threshold
+    matcher             = var.alb_target_group_health_check_matcher
   }
 
   lifecycle {
@@ -86,11 +87,12 @@ resource "aws_alb_target_group" "target_group" {
   }
 
   tags = {
-    Name        = "${var.service.resource_name_prefix}-${var.name}-tg"
-    Description = "${var.description} Target Group"
+    Name        = "${var.service.resource_name_prefix}-${var.name}"
+    Description = var.description
     Service     = var.service.app_name
     Environment = var.service.app_environment
     Version     = var.service.app_version
     User        = var.service.user
+    Terraform   = true
   }
 }

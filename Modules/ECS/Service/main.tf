@@ -8,8 +8,8 @@ resource "aws_ecs_service" "ecs_service" {
   cluster                           = var.ecs_cluster_id
   task_definition                   = var.arn_task_definition
   desired_count                     = var.desired_tasks
-  health_check_grace_period_seconds = 10
-  launch_type                       = "FARGATE"
+  health_check_grace_period_seconds = var.ecs_service_health_check_grace_period_seconds
+  launch_type                       = var.ecs_service_launch_type
 
   network_configuration {
     security_groups = [var.arn_security_group]
@@ -23,7 +23,7 @@ resource "aws_ecs_service" "ecs_service" {
   }
 
   deployment_controller {
-    type = "ECS"
+    type = var.ecs_service_deployment_controller_type
   }
 
   lifecycle {
@@ -37,5 +37,6 @@ resource "aws_ecs_service" "ecs_service" {
     Environment = var.service.app_environment
     Version     = var.service.app_version
     User        = var.service.user
+    Terraform   = true
   }
 }

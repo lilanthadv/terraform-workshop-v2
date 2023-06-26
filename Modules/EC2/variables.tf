@@ -69,5 +69,17 @@ variable "user_data" {
 
 variable "key_pair_name" {
   type        = string
-  description = "EC2 instance key_pair_name"
+  description = "EC2 Instance key_pair_name"
+}
+
+variable "ec2_key_pair_include_public_key" {
+  type        = bool
+  description = "EC2 Key Pair Include Public Key"
+  default     = true
+}
+
+variable "ec2_eip_domain" {
+  type        = string
+  description = "EC2 EIP Domain"
+  default     = "vpc"
 }

@@ -5,7 +5,7 @@
 # AWS ECR Repository
 resource "aws_ecr_repository" "ecr_repository" {
   name                 = "${var.service.resource_name_prefix}-${var.name}"
-  image_tag_mutability = "MUTABLE"
+  image_tag_mutability = var.ecr_repository_image_tag_mutability
 
   tags = {
     Name        = "${var.service.resource_name_prefix}-${var.name}"
@@ -14,5 +14,6 @@ resource "aws_ecr_repository" "ecr_repository" {
     Environment = var.service.app_environment
     Version     = var.service.app_version
     User        = var.service.user
+    Terraform   = true
   }
 }

@@ -60,77 +60,51 @@ variable "host_port" {
   type        = number
 }
 
-variable "access_key" {
-  description = "Access key"
+variable "ecs_task_definition_network_mode" {
+  description = "ECS Task Definition Network Mode"
   type        = string
+  default     = "awsvpc"
 }
 
-variable "cognito_access_key" {
-  description = "Cognito Access key"
-  type        = string
+variable "ecs_task_definition_requires_compatibilities" {
+  description = "ECS Task Definition Requires Compatibilities"
+  type        = list(string)
+  default     = ["FARGATE"]
 }
 
-variable "cognito_client_id" {
-  description = "Cognito Client ID"
-  type        = string
+variable "ecs_task_definition_container_definitions_cpu" {
+  description = "ECS Task Definition Container Definitions CPU"
+  type        = number
+  default     = 0
 }
 
-variable "cognito_domain" {
-  description = "Cognito Domain"
+variable "ecs_task_definition_container_definitions_networkMode" {
+  description = "ECS Task Definition Container Definitions Network Mode"
   type        = string
+  default     = "awsvpc"
 }
 
-variable "cognito_redirect_uri" {
-  description = "Cognito Redirect URI"
+variable "ecs_task_definition_container_definitions_logConfiguration_logDriver" {
+  description = "ECS Task Definition Container Definitions logConfiguration logDriver"
   type        = string
+  default     = "awslogs"
 }
 
-variable "cognito_region" {
-  description = "Cognito Region"
+variable "ecs_task_definition_container_definitions_logConfiguration_secretOptions" {
+  description = "ECS Task Definition Container Definitions logConfiguration secretOptions"
   type        = string
+  default     = null
 }
 
-variable "cognito_secret_key" {
-  description = "Cognito Secret Key"
+variable "ecs_task_definition_container_definitions_logConfiguration_options_awslogs_stream_prefix" {
+  description = "ECS Task Definition Container Definitions logConfiguration options_awslogs stream-prefix"
   type        = string
+  default     = "ecs"
 }
 
-variable "cognito_user_pool_id" {
-  description = "Cognito User Pool ID"
-  type        = string
-}
-
-variable "database_url" {
-  description = "Database URL"
-  type        = string
-}
-
-variable "frontend_url" {
-  description = "Frontend URL"
-  type        = string
-}
-
-variable "jwt_iss" {
-  description = "JWT ISS"
-  type        = string
-}
-
-variable "port" {
-  description = "Port"
-  type        = string
-}
-
-variable "secret_key" {
-  description = "Secret Key"
-  type        = string
-}
-
-variable "ses_email" {
-  description = "SES Email"
-  type        = string
-}
-
-variable "sqs_queue_url" {
-  description = "SQS Queue URL"
-  type        = string
+variable "environment_variables" {
+  type = list(object({
+    name  = string
+    value = string
+  }))
 }
