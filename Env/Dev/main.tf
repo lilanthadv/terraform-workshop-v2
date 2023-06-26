@@ -540,9 +540,9 @@ module "codebuild" {
     },
   ]
 
-  vpc                = module.networking.vpc
-  subnets            = module.networking.public_subnets
-  security_group_ids = [module.security_group_ecs_task.id, module.security_group_db.id]
+  # vpc                = module.networking.vpc
+  # subnets            = module.networking.public_subnets
+  # security_group_ids = [module.security_group_ecs_task.id, module.security_group_db.id]
 
 }
 
