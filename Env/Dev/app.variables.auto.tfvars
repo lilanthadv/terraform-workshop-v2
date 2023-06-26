@@ -1,5 +1,5 @@
 # Database Configurations
-database_name   = "diito"
+database_name   = "ditto"
 master_username = "postgres"
 master_password = "czhv87ea2gil_prod"
 
@@ -14,7 +14,7 @@ secret_key       = "vhn1QprlFoiMpPojqFTnrhdoAuh22FHDQr/0FzbM"
 
 # Repository Configurations
 git_source_type    = "BITBUCKET"
-git_repository_url = ""
-git_connection_arn = ""
-git_repository_id  = ""
+git_repository_url = "https://bitbucket.org/dittosoftware/ditto-doc-api.git"
+git_connection_arn = "arn:aws:codestar-connections:ap-southeast-2:642801335081:connection/766a3241-e13c-4580-8720-292d76b51de3"
+git_repository_id  = "dittosoftware/ditto-doc-api"
 git_branch_name    = "master"
