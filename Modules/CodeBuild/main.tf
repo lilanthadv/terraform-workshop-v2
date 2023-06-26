@@ -39,6 +39,15 @@ resource "aws_codebuild_project" "codebuild" {
     location = var.git_source.git_repository_url
   }
 
+  source_version = "master"
+
+  vpc_config {
+    vpc_id             = var.vpc
+    subnets            = var.subnets
+    security_group_ids = var.security_group_ids
+  }
+
+
   tags = {
     Name        = "${var.service.resource_name_prefix}-${var.name}"
     Description = var.description
