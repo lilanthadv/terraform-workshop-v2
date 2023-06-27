@@ -283,9 +283,10 @@ data "aws_iam_policy_document" "role_policy_devops_role" {
       "ecr:GetDownloadUrlForLayer",
       "ecr:InitiateLayerUpload",
       "ecr:PutImage",
-      "ecr:UploadLayerPart"
+      "ecr:UploadLayerPart",
+      "ecr:GetAuthorizationToken",
     ]
-    resources = var.ecr_repositories
+    resources = concat(var.ecr_repositories, ["arn:aws:ecr:ap-southeast-2:642801335081:repository/node-18-alpine"])
   }
   statement {
     sid    = "AllowECRAuthorization"
