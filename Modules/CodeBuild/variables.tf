@@ -35,7 +35,7 @@ variable "git_source" {
 variable "build_timeout" {
   type        = number
   description = "Build Timeout, Number of minutes, from 5 to 480 (8 hours)"
-  default     = 10
+  default     = 60
 }
 
 
@@ -78,7 +78,7 @@ variable "environment" {
   })
   default = {
     compute_type    = "BUILD_GENERAL1_SMALL"
-    image           = "aws/codebuild/standard:4.0"
+    image           = "aws/codebuild/standard:5.0"
     type            = "LINUX_CONTAINER"
     privileged_mode = true
   }
