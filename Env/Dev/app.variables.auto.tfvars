@@ -1,5 +1,6 @@
 # Database Configurations
 database_name   = "ditto"
+database_schema = "public"
 master_username = "postgres"
 master_password = "czhv87ea2gil_prod"
 

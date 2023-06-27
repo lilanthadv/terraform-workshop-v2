@@ -300,7 +300,7 @@ module "ecs_taks_definition" {
     },
     {
       "name" : "DATABASE_URL",
-      "value" : "postgresql://${var.master_username}:${var.master_password}@${module.database.proxy_endpoint}:5432/dittolocal?schema=ditto"
+      "value" : "postgresql://${var.master_username}:${var.master_password}@${module.database.proxy_endpoint}:5432/${var.database_name}?schema=${var.database_schema}"
     },
     {
       "name" : "FRONT_END_URL",
@@ -537,6 +537,10 @@ module "codebuild" {
     {
       "name" : "ECS_SERVICE_NAME",
       "value" : module.ecs_service.ecs_service_name
+    },
+    {
+      "name" : "DATABASE_URL",
+      "value" : "postgresql://${var.master_username}:${var.master_password}@${module.database.proxy_endpoint}:5432/${var.database_name}?schema=${var.database_schema}"
     },
   ]
 

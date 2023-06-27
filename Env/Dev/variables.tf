@@ -24,6 +24,11 @@ variable "database_name" {
   description = "Database name"
 }
 
+variable "database_schema" {
+  type        = string
+  description = "Database schema"
+}
+
 variable "master_username" {
   type        = string
   description = "Database master username"
