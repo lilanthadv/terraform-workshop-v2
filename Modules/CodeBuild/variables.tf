@@ -84,19 +84,19 @@ variable "environment" {
   }
 }
 
-# variable "vpc" {
-#   type        = string
-#   description = "VPC"
-# }
+variable "vpc" {
+  type        = string
+  description = "VPC"
+}
 
-# variable "subnets" {
-#   type        = list(string)
-#   description = "A map of subnet ids to assign to the DB cluster"
-# }
+variable "subnets" {
+  type        = list(string)
+  description = "A map of subnet ids to assign to the DB cluster"
+}
 
-# variable "security_group_ids" {
-#   type        = list(string)
-#   description = "Security group ids"
-# }
+variable "security_group_ids" {
+  type        = list(string)
+  description = "Security group ids"
+}
 
 

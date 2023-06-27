@@ -42,11 +42,11 @@ resource "aws_codebuild_project" "codebuild" {
 
   source_version = "master"
 
-  # vpc_config {
-  #   vpc_id             = var.vpc
-  #   subnets            = var.subnets
-  #   security_group_ids = var.security_group_ids
-  # }
+  vpc_config {
+    vpc_id             = var.vpc
+    subnets            = var.subnets
+    security_group_ids = var.security_group_ids
+  }
 
 
   tags = {
