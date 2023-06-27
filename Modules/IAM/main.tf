@@ -326,7 +326,14 @@ data "aws_iam_policy_document" "role_policy_devops_role" {
     sid    = "AllowIAMPassRole"
     effect = "Allow"
     actions = [
-      "iam:PassRole",
+      "iam:PassRole"
+    ]
+    resources = ["*"]
+  }
+  statement {
+    sid    = "AllowDescribeSecurityGroups"
+    effect = "Allow"
+    actions = [
       "ec2:DescribeSecurityGroups"
     ]
     resources = ["*"]
