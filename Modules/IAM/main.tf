@@ -326,7 +326,8 @@ data "aws_iam_policy_document" "role_policy_devops_role" {
     sid    = "AllowIAMPassRole"
     effect = "Allow"
     actions = [
-      "iam:PassRole"
+      "iam:PassRole",
+      "ec2:DescribeSecurityGroups"
     ]
     resources = ["*"]
   }
