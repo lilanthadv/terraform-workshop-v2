@@ -50,11 +50,6 @@ variable "iam_role_name" {
   }
 }
 
-variable "docker_image_url" {
-  type        = string
-  description = "ECS Task Definition Docker Image URL"
-}
-
 variable "container_port" {
   type        = number
   description = "ECS Task Definition Container port"

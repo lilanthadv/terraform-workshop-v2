@@ -334,7 +334,12 @@ data "aws_iam_policy_document" "role_policy_devops_role" {
     sid    = "AllowDescribeSecurityGroups"
     effect = "Allow"
     actions = [
-      "ec2:DescribeSecurityGroups"
+      "ec2:DescribeSecurityGroups",
+      "ec2:CreateNetworkInterface",
+      "ec2:DeleteNetworkInterface",
+      "ec2:DescribeSubnets",
+      "ec2:DescribeNetworkInterfaces",
+      "ec2:AssignPrivateIpAddresses"
     ]
     resources = ["*"]
   }
