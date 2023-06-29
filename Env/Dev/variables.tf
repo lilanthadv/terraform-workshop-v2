@@ -80,27 +80,84 @@ variable "secret_key" {
   type        = string
 }
 
-variable "git_source_type" {
-  description = "Git Source Type"
+variable "backend_git_connection_arn" {
+  description = "Git Connection ARN for Backend"
   type        = string
 }
 
-variable "git_repository_url" {
-  description = "Git Repository URL"
+variable "backend_git_source_type" {
+  description = "Git Source Type for Backend"
   type        = string
 }
 
-variable "git_connection_arn" {
-  description = "Git Connection ARN"
+variable "backend_git_repository_url" {
+  description = "Git Repository URL for Backend"
   type        = string
 }
 
-variable "git_repository_id" {
-  description = "Git Repository Id"
+variable "backend_git_repository_id" {
+  description = "Git Repository Id for Backend"
   type        = string
 }
 
-variable "git_branch_name" {
-  description = "Git Branch Name"
+variable "backend_git_branch_name" {
+  description = "Git Branch Name for Backend"
+  type        = string
+}
+
+
+variable "frontend_git_connection_arn" {
+  description = "Git Connection ARN for Frontend"
+  type        = string
+}
+
+variable "frontend_git_source_type" {
+  description = "Git Source Type for Frontend"
+  type        = string
+}
+
+variable "frontend_git_repository_url" {
+  description = "Git Repository URL for Frontend"
+  type        = string
+}
+
+variable "frontend_git_repository_id" {
+  description = "Git Repository Id for Frontend"
+  type        = string
+}
+
+variable "frontend_git_branch_name" {
+  description = "Git Branch Name for Frontend"
+  type        = string
+}
+
+# Frontend Environment variables
+variable "react_app_api_url" {
+  description = "Front end REACT_APP_API_URL variable value"
+  type        = string
+}
+
+variable "react_app_front_end_uri" {
+  description = "Front end REACT_APP_FRONT_END_URI variable value"
+  type        = string
+}
+
+variable "react_app_stripe_key" {
+  description = "Front end REACT_APP_STRIPE_KEY variable value"
+  type        = string
+}
+
+variable "react_app_pdf_service_url" {
+  description = "Front end REACT_APP_PDF_SERVICE_URL variable value"
+  type        = string
+}
+
+variable "react_app_word_service_url" {
+  description = "Front end REACT_APP_WORD_SERVICE_URL variable value"
+  type        = string
+}
+
+variable "react_app_syncfusion_key" {
+  description = "Front end REACT_APP_SYNCFUSION_KEY variable value"
   type        = string
 }

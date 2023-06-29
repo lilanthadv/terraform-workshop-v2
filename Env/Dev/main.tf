@@ -501,8 +501,8 @@ module "codebuild_backend" {
   codedeploy_role = module.codebuild_role.arn_role
 
   git_source = {
-    git_source_type    = var.git_source_type
-    git_repository_url = var.git_repository_url
+    git_source_type    = var.backend_git_source_type
+    git_repository_url = var.backend_git_repository_url
   }
 
   environment_variables = [
@@ -554,6 +554,75 @@ module "codebuild_backend" {
 
 }
 
+# Creating CodeBuild Project for Frontend
+module "codebuild_frontend" {
+  source          = "../../Modules/CodeBuild"
+  service         = local.service
+  name            = "codebuild-project-frontend"
+  description     = "CodeBuild project Frontend"
+  codedeploy_role = module.codebuild_role.arn_role
+
+  git_source = {
+    git_source_type    = var.frontend_git_source_type
+    git_repository_url = var.frontend_git_repository_url
+  }
+
+  environment_variables = [
+    {
+      "name" : "S3_BUCKET",
+      "value" : module.s3_web.bucket_domain_name
+    },
+    {
+      "name" : "DISTRIBUTION_ID",
+      "value" : module.s3_web.cloudfront_distribution_id
+    },
+    {
+      "name" : "REACT_APP_API_URL",
+      "value" : var.react_app_api_url
+    },
+    {
+      "name" : "REACT_APP_FRONT_END_URI",
+      "value" : var.react_app_front_end_uri
+    },
+     {
+      "name" : "REACT_APP_AWS_REGION",
+      "value" : var.region
+    },
+    {
+      "name" : "REACT_APP_AWS_USER_POOL_ID",
+      "value" : module.cognito.id
+    },
+    {
+      "name" : "REACT_APP_AWS_WEB_CLIENT_ID",
+      "value" : module.cognito.client_id
+    },
+    {
+      "name" : "REACT_APP_GOOGLE_LOGIN_CLIENT_ID",
+      "value" : module.cognito.provider_google_id
+    },
+     {
+      "name" : "REACT_APP_COGNITO_DOMAIN",
+      "value" : "${module.cognito.domain}.auth.${var.region}.amazoncognito.com"
+    },
+    {
+      "name" : "REACT_APP_STRIPE_KEY",
+      "value" : var.react_app_stripe_key
+    },
+    {
+      "name" : "REACT_APP_PDF_SERVICE_URL",
+      "value" : var.react_app_pdf_service_url
+    },
+     {
+      "name" : "REACT_APP_WORD_SERVICE_URL",
+      "value" : var.react_app_word_service_url
+    },
+    {
+      "name" : "REACT_APP_SYNCFUSION_KEY",
+      "value" : var.react_app_syncfusion_key
+    },
+  ]
+}
+
 # Creating CodePipeline for Backend
 module "codepipeline_backend" {
   source                   = "../../Modules/CodePipeline"
@@ -564,7 +633,22 @@ module "codepipeline_backend" {
   artifact_store_s3_bucket = module.pipeline_artifact_store_s3.id
   codebuild_project        = module.codebuild_backend.project_id
 
-  git_connection_arn = var.git_connection_arn
-  git_repository_id  = var.git_repository_id
-  git_branch_name    = var.git_branch_name
+  git_connection_arn = var.backend_git_connection_arn
+  git_repository_id  = var.backend_git_repository_id
+  git_branch_name    = var.backend_git_branch_name
+}
+
+# Creating CodePipeline for Frontend
+module "codepipeline_frontend" {
+  source                   = "../../Modules/CodePipeline"
+  service                  = local.service
+  name                     = "codepipeline-frontend"
+  description              = "Codepipeline Frontend"
+  pipe_role                = module.codebuild_role.arn_role
+  artifact_store_s3_bucket = module.pipeline_artifact_store_s3.id
+  codebuild_project        = module.codebuild_frontend.project_id
+
+  git_connection_arn = var.frontend_git_connection_arn
+  git_repository_id  = var.frontend_git_repository_id
+  git_branch_name    = var.frontend_git_branch_name
 }
