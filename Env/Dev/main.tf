@@ -489,11 +489,11 @@ module "codebuild_role_policy" {
   attach_to               = module.codebuild_role.name_role
   create_codebuild_policy = true
   ecr_repositories        = [module.ecr.ecr_repository_arn]
-  code_build_projects     = [module.codebuild.project_arn]
+  code_build_projects     = [module.codebuild_backend.project_arn]
 }
 
-# Creating CodeBuild project
-module "codebuild" {
+# Creating CodeBuild Project for Backend
+module "codebuild_backend" {
   source          = "../../Modules/CodeBuild"
   service         = local.service
   name            = "codebuild-project"
@@ -517,6 +517,10 @@ module "codebuild" {
     {
       "name" : "ECS_TASK_DEFINITION_NAME",
       "value" : module.ecs_taks_definition.task_definition_id
+    },
+    {
+      "name" : "ECS_TASK_CPU",
+      "value" : module.ecs_taks_definition.task_definition_cpu
     },
     {
       "name" : "ECS_TASK_MEMORY",
@@ -550,15 +554,15 @@ module "codebuild" {
 
 }
 
-# Creating CodePipeline
-module "codepipeline" {
+# Creating CodePipeline for Backend
+module "codepipeline_backend" {
   source                   = "../../Modules/CodePipeline"
   service                  = local.service
   name                     = "codepipeline"
   description              = "Codepipeline"
   pipe_role                = module.codebuild_role.arn_role
   artifact_store_s3_bucket = module.pipeline_artifact_store_s3.id
-  codebuild_project        = module.codebuild.project_id
+  codebuild_project        = module.codebuild_backend.project_id
 
   git_connection_arn = var.git_connection_arn
   git_repository_id  = var.git_repository_id

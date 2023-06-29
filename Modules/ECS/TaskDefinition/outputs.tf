@@ -14,6 +14,10 @@ output "task_definition_memory" {
   value = aws_ecs_task_definition.ecs_task_definition.memory
 }
 
+output "task_definition_cpu" {
+  value = aws_ecs_task_definition.ecs_task_definition.cpu
+}
+
 output "container_name" {
   value = local.container_name
 }
