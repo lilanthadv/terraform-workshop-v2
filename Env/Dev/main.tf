@@ -284,7 +284,7 @@ module "ecs_taks_definition" {
     },
     {
       "name" : "COGNITO_REDIRECT_URI",
-      "value" : "https://dittoflow.com/cb"
+      "value" : "https://app.dittoflow.com/cb"
     },
     {
       "name" : "COGNITO_REGION",
@@ -325,6 +325,14 @@ module "ecs_taks_definition" {
     {
       "name" : "SQS_QUEUE_URL",
       "value" : module.sqs.queue_url
+    },
+    {
+      "name": "STRIPE_STANDERD_PLAN_PRICE_ID",
+      "value": "price_1LvvgtKNVhF84d7ocSet4V8Y"
+    },
+    {
+      "name": "AWS_S3_BUCKET",
+      "value": "dittoflow-live-files"
     },
   ]
 }
@@ -548,9 +556,6 @@ module "codebuild_backend" {
     },
   ]
 
-  vpc                = module.networking.vpc
-  subnets            = module.networking.public_subnets
-  security_group_ids = [module.security_group_bastion_host.id]
 
 }
 
