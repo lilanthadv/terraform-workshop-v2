@@ -297,13 +297,13 @@ module "ecs_taks_definition" {
       "value" : module.sqs.queue_url
     },
     {
-      "name": "STRIPE_STANDERD_PLAN_PRICE_ID",
-      "value": "price_1LvvgtKNVhF84d7ocSet4V8Y"
-     },
-     {
-      "name": "AWS_S3_BUCKET",
-      "value": "ditto-doc-files"
-     }
+      "name" : "STRIPE_STANDERD_PLAN_PRICE_ID",
+      "value" : "price_1LvvgtKNVhF84d7ocSet4V8Y"
+    },
+    {
+      "name" : "AWS_S3_BUCKET",
+      "value" : "ditto-doc-files"
+    }
   ]
 }
 
@@ -527,6 +527,7 @@ module "codebuild_server_app" {
     },
   ]
 
+  depends_on = [module.codebuild_role]
 }
 
 # CodePipeline for Server App
@@ -542,6 +543,8 @@ module "codepipeline_server_app" {
   git_connection_arn = var.server_app_git_connection_arn
   git_repository_id  = var.server_app_git_repository_id
   git_branch_name    = var.server_app_git_branch_name
+
+  depends_on = [module.codebuild_role, module.codebuild_server_app]
 }
 
 # CodeBuild Project for Client APP
