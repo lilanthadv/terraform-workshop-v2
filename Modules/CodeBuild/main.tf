@@ -40,15 +40,6 @@ resource "aws_codebuild_project" "codebuild" {
     git_clone_depth = 1
   }
 
-  source_version = "master"
-
-  # vpc_config {
-  #   vpc_id             = var.vpc
-  #   subnets            = var.subnets
-  #   security_group_ids = var.security_group_ids
-  # }
-
-
   tags = {
     Name        = "${var.service.resource_name_prefix}-${var.name}"
     Description = var.description

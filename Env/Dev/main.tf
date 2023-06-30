@@ -3,14 +3,6 @@ provider "aws" {
   region = var.region
 }
 
-# Get Region Available Zones
-data "aws_availability_zones" "az_availables" {
-  state = "available"
-}
-
-# Get User Details
-data "aws_caller_identity" "current" {}
-
 # Local Variables
 locals {
   app_name           = "${var.app_name}-${var.environment}"
@@ -23,18 +15,19 @@ locals {
     user                 = split("/", data.aws_caller_identity.current.arn)[1]
     resource_name_prefix = "${var.app_name}-${var.environment}"
   }
+  database_connection_string = "postgresql://${var.database_master_username}:${var.database_master_password}@${module.database.proxy_endpoint}:${var.database_port}/${var.database_name}?schema=${var.database_schema}"
 }
 
-# Networking module
+# Networking
 module "networking" {
   source             = "../../Modules/Networking"
   service            = local.service
   name               = "vpc"
-  description        = "Application VPC"
+  description        = "VPC for Application"
   availability_zones = local.availability_zones
 }
 
-# Creating Security Group for Database
+# Security Group for Database
 module "security_group_db" {
   source      = "../../Modules/SecurityGroup"
   service     = local.service
@@ -44,26 +37,26 @@ module "security_group_db" {
   ingress_rules = [
     {
       protocol        = "tcp"
-      ingress_port    = 5432
+      ingress_port    = var.database_port
       cidr_blocks     = ["0.0.0.0/0"]
       security_groups = []
     },
     {
       protocol        = "tcp"
-      ingress_port    = 5432
+      ingress_port    = var.database_port
       cidr_blocks     = ["0.0.0.0/0"]
       security_groups = [module.security_group_bastion_host.id]
     },
     {
       protocol        = "tcp"
-      ingress_port    = 5432
+      ingress_port    = var.database_port
       cidr_blocks     = ["0.0.0.0/0"]
       security_groups = [module.security_group_ecs_task.id]
     }
   ]
 }
 
-# Database module
+# Database
 module "database" {
   source               = "../../Modules/RDS/Serverless/V2"
   service              = local.service
@@ -72,47 +65,23 @@ module "database" {
   availability_zones   = local.availability_zones
   subnets              = module.networking.private_subnets
   security_groups      = [module.security_group_db.id]
-  engine               = "aurora-postgresql"
-  engine_version       = "14.6"
-  engine_mode          = "provisioned"
+  engine               = var.database_engine
+  engine_version       = var.database_engine_version
+  engine_mode          = var.database_engine_mode
   database_name        = var.database_name
-  master_username      = var.master_username
-  master_password      = var.master_password
-  port                 = 5432
-  deletion_protection  = false
-  skip_final_snapshot  = true
-  enable_http_endpoint = true
+  master_username      = var.database_master_username
+  master_password      = var.database_master_password
+  port                 = var.database_port
+  deletion_protection  = var.database_deletion_protection
+  skip_final_snapshot  = var.database_skip_final_snapshot
+  enable_http_endpoint = var.database_enable_http_endpoint
+  storage_encrypted    = var.database_storage_encrypted
   # Scaling Configuration
-  max_capacity = 2.0
-  min_capacity = 1.0
-  # Encryption Configuration
-  storage_encrypted = true
+  min_capacity = var.database_scaling_min_capacity
+  max_capacity = var.database_scaling_max_capacity
 }
 
-# Ubuntu AMI
-data "aws_ami" "ubuntu" {
-  most_recent = true
-
-  filter {
-    name   = "name"
-    values = ["ubuntu/images/hvm-ssd/ubuntu-jammy-22.04-amd64-server-*"]
-  }
-
-  filter {
-    name   = "virtualization-type"
-    values = ["hvm"]
-  }
-
-  filter {
-    name   = "architecture"
-    values = ["x86_64"]
-  }
-
-  # Canonical
-  owners = ["099720109477"]
-}
-
-# Creating Security Group for Bastion Host
+# Security Group for Bastion Host
 module "security_group_bastion_host" {
   source      = "../../Modules/SecurityGroup"
   service     = local.service
@@ -128,63 +97,64 @@ module "security_group_bastion_host" {
     },
     {
       protocol        = "tcp"
-      ingress_port    = 5432
+      ingress_port    = var.database_port
       cidr_blocks     = ["0.0.0.0/0"]
       security_groups = []
     }
   ]
 }
 
-# Creating Bastion Host for DB
+# Bastion Host for Database
 module "bastion_host" {
   source                      = "../../Modules/EC2"
   service                     = local.service
   name                        = "bastion-host"
-  description                 = "Bastion Host to the connect to the DB"
+  description                 = "Bastion Host for Database"
   ami                         = data.aws_ami.ubuntu.id
-  instance_type               = "t2.micro"
+  instance_type               = var.bastion_host_instance_type
   subnet_id                   = module.networking.public_subnets[0]
   security_groups             = [module.security_group_bastion_host.id]
-  associate_public_ip_address = true
+  associate_public_ip_address = var.bastion_host_associate_public_ip_address
   availability_zone           = local.availability_zones[0]
   user_data                   = file("./bastion_host_user_data.sh")
-  associate_elastic_ip        = false
-  key_pair_name               = "bastionhost"
+  associate_elastic_ip        = var.bastion_host_associate_elastic_ip
+  key_pair_name               = var.bastion_host_key_pair_name
 }
 
-# SQS module
+# SQS
 module "sqs" {
   source                      = "../../Modules/SQS"
   service                     = local.service
   name                        = "queue.fifo"
   description                 = "SQS service"
-  fifo_queue                  = true
-  deduplication_scope         = "messageGroup"
-  fifo_throughput_limit       = "perMessageGroupId"
-  visibility_timeout_seconds  = 30
-  delay_seconds               = 0
-  max_message_size            = 256000
-  message_retention_seconds   = 345600
-  receive_wait_time_seconds   = 1
-  content_based_deduplication = false
+  fifo_queue                  = var.sqs_fifo_queue
+  deduplication_scope         = var.sqs_deduplication_scope
+  fifo_throughput_limit       = var.sqs_fifo_throughput_limit
+  visibility_timeout_seconds  = var.sqs_visibility_timeout_seconds
+  delay_seconds               = var.sqs_delay_seconds
+  max_message_size            = var.sqs_max_message_size
+  message_retention_seconds   = var.sqs_message_retention_seconds
+  receive_wait_time_seconds   = var.sqs_receive_wait_time_seconds
+  content_based_deduplication = var.sqs_content_based_deduplication
 }
 
-# Creating Target Group for the ALB
+# ECS Resources
+# ECS Target Group for ALB
 module "target_group" {
   source              = "../../Modules/ALB"
   service             = local.service
   name                = "alb-tg"
-  description         = "Target Group for the ALB"
+  description         = "Target Group for ALB"
   create_target_group = true
-  port                = var.host_port
-  protocol            = "HTTP"
+  port                = var.ecs_taks_definition_host_port
+  protocol            = var.ecs_target_group_protocol
   vpc                 = module.networking.vpc
-  tg_type             = "ip"
-  health_check_path   = "/health"
-  health_check_port   = var.host_port
+  tg_type             = var.ecs_target_group_tg_type
+  health_check_path   = var.ecs_target_group_health_check_path
+  health_check_port   = var.ecs_taks_definition_host_port
 }
 
-# Creating Security Group for the ALB
+# ECS Security Group for ALB
 module "security_group_alb" {
   source      = "../../Modules/SecurityGroup"
   service     = local.service
@@ -207,42 +177,42 @@ module "security_group_alb" {
   ]
 }
 
-# Creating Application ALB
+# ECS ALB
 module "alb" {
   source              = "../../Modules/ALB"
   service             = local.service
   name                = "alb"
-  description         = "Application ALB"
+  description         = "ECS ALB"
   create_alb          = true
-  enable_https        = true
+  enable_https        = var.ecs_alb_enable_https
   subnets             = module.networking.public_subnets
   security_group      = module.security_group_alb.id
   target_group        = module.target_group.arn_tg
-  ssl_certificate_arn = "arn:aws:acm:ap-southeast-2:642801335081:certificate/266992e2-0f7a-4066-b15f-dae1649522ec"
+  ssl_certificate_arn = var.ecs_alb_ssl_certificate_arn
 }
 
-# ECS Role
+# ECS IAM Role
 module "ecs_role" {
   source             = "../../Modules/IAM"
   service            = local.service
   name               = "ecs-task-excecution-role"
   name_ecs_task_role = "ecs-task-role"
-  description        = "ECS Role"
+  description        = "ECS IAM Role"
   create_ecs_role    = true
   database           = [module.database.database_arn]
 }
 
-# Creating a IAM Policy for Role
+# ECS IAM Policy for ECS Role
 module "ecs_role_policy" {
   source        = "../../Modules/IAM"
   service       = local.service
   name          = "ecs-rp"
-  description   = "IAM Policy for role"
+  description   = "ECS IAM Policy for ECS Role"
   create_policy = true
   attach_to     = module.ecs_role.name_role
 }
 
-# Creating ECR Repository to Store Docker Images
+# ECR Repository to Store Docker Images
 module "ecr" {
   source      = "../../Modules/ECR"
   service     = local.service
@@ -250,7 +220,7 @@ module "ecr" {
   description = "ECR Repository to store Docker Images"
 }
 
-# Creating ECS Task Definition
+# ECS Task Definition
 module "ecs_taks_definition" {
   source             = "../../Modules/ECS/TaskDefinition"
   service            = local.service
@@ -258,21 +228,21 @@ module "ecs_taks_definition" {
   description        = "ECS Task Definition"
   execution_role_arn = module.ecs_role.arn_role
   task_role_arn      = module.ecs_role.arn_role_ecs_task_role
-  cpu                = var.cpu
-  memory             = var.memory
+  cpu                = var.ecs_taks_definition_cpu
+  memory             = var.ecs_taks_definition_memory
   docker_repo        = module.ecr.ecr_repository_url
   region             = var.region
-  container_port     = var.container_port
-  host_port          = var.host_port
+  container_port     = var.ecs_service_container_port
+  host_port          = var.ecs_taks_definition_host_port
 
   environment_variables = [
     {
       "name" : "ACCESS_KEY",
-      "value" : var.access_key
+      "value" : var.ecs_taks_definition_access_key
     },
     {
       "name" : "COGNITO_ACCESS_KEY",
-      "value" : var.access_key
+      "value" : var.ecs_taks_definition_secret_key
     },
     {
       "name" : "COGNITO_CLIENT_ID",
@@ -284,7 +254,7 @@ module "ecs_taks_definition" {
     },
     {
       "name" : "COGNITO_REDIRECT_URI",
-      "value" : "https://dittoflow.com/cb"
+      "value" : var.ecs_taks_definition_env_cognito_redirect_uri
     },
     {
       "name" : "COGNITO_REGION",
@@ -292,7 +262,7 @@ module "ecs_taks_definition" {
     },
     {
       "name" : "COGNITO_SECRET_KEY",
-      "value" : var.secret_key
+      "value" : var.ecs_taks_definition_secret_key
     },
     {
       "name" : "COGNITO_USER_POOL_ID",
@@ -300,11 +270,11 @@ module "ecs_taks_definition" {
     },
     {
       "name" : "DATABASE_URL",
-      "value" : "postgresql://${var.master_username}:${var.master_password}@${module.database.proxy_endpoint}:5432/${var.database_name}?schema=${var.database_schema}"
+      "value" : local.database_connection_string
     },
     {
       "name" : "FRONT_END_URL",
-      "value" : "https://dittoflow.com"
+      "value" : var.ecs_taks_definition_env_front_end_url
     },
     {
       "name" : "JWT_ISS",
@@ -312,15 +282,15 @@ module "ecs_taks_definition" {
     },
     {
       "name" : "PORT",
-      "value" : var.host_port
+      "value" : var.ecs_taks_definition_host_port
     },
     {
       "name" : "SECRET_KEY",
-      "value" : var.secret_key
+      "value" : var.ecs_taks_definition_secret_key
     },
     {
       "name" : "SES_EMAIL",
-      "value" : "no-reply@dittosoftware.com"
+      "value" : var.ecs_taks_definition_env_ses_email
     },
     {
       "name" : "SQS_QUEUE_URL",
@@ -329,7 +299,7 @@ module "ecs_taks_definition" {
   ]
 }
 
-# Creating a Security Group for ECS Task
+# ECS Security Group for ECS Task
 module "security_group_ecs_task" {
   source      = "../../Modules/SecurityGroup"
   service     = local.service
@@ -338,13 +308,13 @@ module "security_group_ecs_task" {
   vpc         = module.networking.vpc
   ingress_rules = [{
     protocol        = "tcp"
-    ingress_port    = var.host_port
+    ingress_port    = var.ecs_taks_definition_host_port
     cidr_blocks     = ["0.0.0.0/0"]
     security_groups = [module.security_group_alb.id]
   }]
 }
 
-# Creating ECS Cluster 
+# ECS Cluster 
 module "ecs_cluster" {
   source      = "../../Modules/ECS/Cluster"
   service     = local.service
@@ -352,24 +322,24 @@ module "ecs_cluster" {
   description = "ECS Cluster"
 }
 
-# Creating ECS Service
+# ECS Service
 module "ecs_service" {
   depends_on          = [module.alb]
   source              = "../../Modules/ECS/Service"
   service             = local.service
   name                = "service"
   description         = "ECS Service"
-  desired_tasks       = 1
+  desired_tasks       = var.ecs_service_desired_tasks
   arn_security_group  = module.security_group_ecs_task.id
   ecs_cluster_id      = module.ecs_cluster.ecs_cluster_id
   arn_target_group    = module.target_group.arn_tg
   arn_task_definition = module.ecs_taks_definition.arn_task_definition
   subnets             = module.networking.private_subnets
-  container_port      = var.host_port
+  container_port      = var.ecs_service_container_port
   container_name      = module.ecs_taks_definition.container_name
 }
 
-# Creating ECS Autoscaling Policies
+# ECS Autoscaling
 module "ecs_autoscaling" {
   depends_on   = [module.ecs_service]
   source       = "../../Modules/ECS/Autoscaling"
@@ -378,12 +348,12 @@ module "ecs_autoscaling" {
   description  = "ECS Autoscaling Policies"
   cluster_name = module.ecs_cluster.ecs_cluster_name
   service_name = module.ecs_service.ecs_service_name
-  min_capacity = 1
-  max_capacity = 4
+  min_capacity = var.ecs_autoscaling_min_capacity
+  max_capacity = var.ecs_autoscaling_max_capacity
 }
 
-# S3 Bucket for Frontend Application
-module "s3_web" {
+# S3 Bucket for Client Application
+module "s3_client_app_bucket" {
   source            = "../../Modules/S3"
   service           = local.service
   name              = "web-s3"
@@ -401,26 +371,26 @@ module "cognito" {
   description = "Cognito User Pool"
 
   lambda_config = {
-    pre_sign_up_arn    = "arn:aws:lambda:ap-southeast-2:642801335081:function:autoConfirm_ditto_workflow_dev"
-    custom_message_arn = "arn:aws:lambda:ap-southeast-2:642801335081:function:work_flow_reset_password_staging"
+    pre_sign_up_arn    = var.cognito_lambda_config_pre_sign_up_arn
+    custom_message_arn = var.cognito_lambda_config_custom_message_arn
   }
 
   google_configurations = {
-    client_id     = "198930728399-cp287otkh21l80hdjs7bsqe6h2bv7i3b.apps.googleusercontent.com"
-    client_secret = "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"
+    client_id     = var.cognito_google_configurations_client_id
+    client_secret = var.cognito_google_configurations_client_secret
   }
 
   microsoft_configuration = {
-    client_id                 = "4b2a6342-3204-40ea-a9b8-f6deda3fa854"
-    client_secret             = "f1U8Q~R~w-eje.QAq1~gx1At9ubOGbHLKzjGKbo2"
-    oidc_issuer               = "https://login.microsoftonline.com/b8410e4c-fbf3-4b8b-8e97-ecab19b58cb5/v2.0"
-    authorize_scopes          = "profile email openid"
-    attributes_request_method = "GET"
+    client_id                 = var.cognito_microsoft_configuration_client_id
+    client_secret             = var.cognito_microsoft_configuration_client_secret
+    oidc_issuer               = var.cognito_microsoft_configuration_oidc_issuer
+    authorize_scopes          = var.cognito_microsoft_configuration_authorize_scopes
+    attributes_request_method = var.cognito_microsoft_configuration_attributes_request_method
   }
 
   client_configuration = {
-    callback_urls = ["https://dittoflow.com/home", "https://dittoflow.com/cb"]
-    logout_urls   = ["https://dittoflow.com/login", "https://dittoflow.com/home"]
+    callback_urls = var.cognito_client_configuration_callback_urls
+    logout_urls   = var.cognito_client_configuration_logout_urls
   }
 
   schema_attributes = [
@@ -461,13 +431,13 @@ module "cognito" {
 
 }
 
-# S3 for CodePipeline
+# S3 Bucket for CodePipeline
 module "pipeline_artifact_store_s3" {
   source        = "../../Modules/S3"
   service       = local.service
   name          = "pipeline-artifact"
   description   = "S3 Bucket for CodePipeline Artifact Store"
-  force_destroy = true
+  force_destroy = var.s3_bucket_pipeline_artifact_store_force_destroy
 }
 
 # Codebuild Role
@@ -489,11 +459,11 @@ module "codebuild_role_policy" {
   attach_to               = module.codebuild_role.name_role
   create_codebuild_policy = true
   ecr_repositories        = [module.ecr.ecr_repository_arn]
-  code_build_projects     = [module.codebuild_backend.project_arn]
+  code_build_projects     = [module.codebuild_server_app.project_arn]
 }
 
-# Creating CodeBuild Project for Backend
-module "codebuild_backend" {
+# CodeBuild Project for Server App
+module "codebuild_server_app" {
   source          = "../../Modules/CodeBuild"
   service         = local.service
   name            = "codebuild-project"
@@ -501,8 +471,8 @@ module "codebuild_backend" {
   codedeploy_role = module.codebuild_role.arn_role
 
   git_source = {
-    git_source_type    = var.backend_git_source_type
-    git_repository_url = var.backend_git_repository_url
+    git_source_type    = var.server_app_git_source_type
+    git_repository_url = var.server_app_git_repository_url
   }
 
   environment_variables = [
@@ -544,18 +514,29 @@ module "codebuild_backend" {
     },
     {
       "name" : "DATABASE_URL",
-      "value" : "postgresql://${var.master_username}:${var.master_password}@${module.database.proxy_endpoint}:5432/${var.database_name}?schema=${var.database_schema}"
+      "value" : local.database_connection_string
     },
   ]
 
-  vpc                = module.networking.vpc
-  subnets            = module.networking.public_subnets
-  security_group_ids = [module.security_group_bastion_host.id]
-
 }
 
-# Creating CodeBuild Project for Frontend
-module "codebuild_frontend" {
+# CodePipeline for Server App
+module "codepipeline_server_app" {
+  source                   = "../../Modules/CodePipeline"
+  service                  = local.service
+  name                     = "codepipeline"
+  description              = "Codepipeline"
+  pipe_role                = module.codebuild_role.arn_role
+  artifact_store_s3_bucket = module.pipeline_artifact_store_s3.id
+  codebuild_project        = module.codebuild_server_app.project_id
+
+  git_connection_arn = var.server_app_git_connection_arn
+  git_repository_id  = var.server_app_git_repository_id
+  git_branch_name    = var.server_app_git_branch_name
+}
+
+# CodeBuild Project for Client APP
+module "codebuild_client_app" {
   source          = "../../Modules/CodeBuild"
   service         = local.service
   name            = "codebuild-project-frontend"
@@ -563,28 +544,28 @@ module "codebuild_frontend" {
   codedeploy_role = module.codebuild_role.arn_role
 
   git_source = {
-    git_source_type    = var.frontend_git_source_type
-    git_repository_url = var.frontend_git_repository_url
+    git_source_type    = var.client_app_git_source_type
+    git_repository_url = var.client_app_git_repository_url
   }
 
   environment_variables = [
     {
       "name" : "S3_BUCKET",
-      "value" : module.s3_web.bucket_domain_name
+      "value" : module.s3_client_app_bucket.bucket_domain_name
     },
     {
       "name" : "DISTRIBUTION_ID",
-      "value" : module.s3_web.cloudfront_distribution_id
+      "value" : module.s3_client_app_bucket.cloudfront_distribution_id
     },
     {
       "name" : "REACT_APP_API_URL",
-      "value" : var.react_app_api_url
+      "value" : var.codebuild_client_app_env_api_url
     },
     {
       "name" : "REACT_APP_FRONT_END_URI",
-      "value" : var.react_app_front_end_uri
+      "value" : var.codebuild_client_app_env_front_end_uri
     },
-     {
+    {
       "name" : "REACT_APP_AWS_REGION",
       "value" : var.region
     },
@@ -600,55 +581,40 @@ module "codebuild_frontend" {
       "name" : "REACT_APP_GOOGLE_LOGIN_CLIENT_ID",
       "value" : module.cognito.provider_google_id
     },
-     {
+    {
       "name" : "REACT_APP_COGNITO_DOMAIN",
       "value" : "${module.cognito.domain}.auth.${var.region}.amazoncognito.com"
     },
     {
       "name" : "REACT_APP_STRIPE_KEY",
-      "value" : var.react_app_stripe_key
+      "value" : var.codebuild_client_app_env_stripe_key
     },
     {
       "name" : "REACT_APP_PDF_SERVICE_URL",
-      "value" : var.react_app_pdf_service_url
+      "value" : var.codebuild_client_app_env_pdf_service_url
     },
-     {
+    {
       "name" : "REACT_APP_WORD_SERVICE_URL",
-      "value" : var.react_app_word_service_url
+      "value" : var.codebuild_client_app_env_word_service_url
     },
     {
       "name" : "REACT_APP_SYNCFUSION_KEY",
-      "value" : var.react_app_syncfusion_key
+      "value" : var.codebuild_client_app_env_syncfusion_key
     },
   ]
 }
 
-# Creating CodePipeline for Backend
-module "codepipeline_backend" {
-  source                   = "../../Modules/CodePipeline"
-  service                  = local.service
-  name                     = "codepipeline"
-  description              = "Codepipeline"
-  pipe_role                = module.codebuild_role.arn_role
-  artifact_store_s3_bucket = module.pipeline_artifact_store_s3.id
-  codebuild_project        = module.codebuild_backend.project_id
-
-  git_connection_arn = var.backend_git_connection_arn
-  git_repository_id  = var.backend_git_repository_id
-  git_branch_name    = var.backend_git_branch_name
-}
-
-# Creating CodePipeline for Frontend
-module "codepipeline_frontend" {
+# CodePipeline for Client APP
+module "codepipeline_client_app" {
   source                   = "../../Modules/CodePipeline"
   service                  = local.service
   name                     = "codepipeline-frontend"
   description              = "Codepipeline Frontend"
   pipe_role                = module.codebuild_role.arn_role
   artifact_store_s3_bucket = module.pipeline_artifact_store_s3.id
-  codebuild_project        = module.codebuild_frontend.project_id
+  codebuild_project        = module.codebuild_client_app.project_id
 
-  git_connection_arn = var.frontend_git_connection_arn
-  git_repository_id  = var.frontend_git_repository_id
-  git_branch_name    = var.frontend_git_branch_name
+  git_connection_arn = var.client_app_git_connection_arn
+  git_repository_id  = var.client_app_git_repository_id
+  git_branch_name    = var.client_app_git_branch_name
 }
