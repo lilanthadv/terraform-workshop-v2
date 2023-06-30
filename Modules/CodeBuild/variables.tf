@@ -84,4 +84,26 @@ variable "environment" {
   }
 }
 
+variable "enable_vpc" {
+  type        = bool
+  description = "Code Build Enable VPC"
+  default     = false
+}
 
+variable "vpc" {
+  description = "VPC ID"
+  type        = string
+  default     = ""
+}
+
+variable "subnets" {
+  description = "List of subnet IDs"
+  type        = list(string)
+  default     = []
+}
+
+variable "security_group_ids" {
+  description = "List of security group IDs"
+  type        = list(string)
+  default     = []
+}

@@ -52,6 +52,12 @@ module "security_group_db" {
       ingress_port    = var.database_port
       cidr_blocks     = ["0.0.0.0/0"]
       security_groups = [module.security_group_ecs_task.id]
+    },
+    {
+      protocol        = "tcp"
+      ingress_port    = var.database_port
+      cidr_blocks     = ["0.0.0.0/0"]
+      security_groups = [module.security_group_codebuild_server.id]
     }
   ]
 }
@@ -458,6 +464,16 @@ module "codebuild_role" {
   create_codebuild_role = true
 }
 
+# Security Group for Codebuild Server
+module "security_group_codebuild_server" {
+  source        = "../../Modules/SecurityGroup"
+  service       = local.service
+  name          = "codebuild-sg-server"
+  description   = "Security Group for Codebuild Server"
+  vpc           = module.networking.vpc
+  ingress_rules = []
+}
+
 # Codebuild Role Policy
 module "codebuild_role_policy" {
   source                  = "../../Modules/IAM"
@@ -483,6 +499,11 @@ module "codebuild_server_app" {
     git_source_type    = var.server_app_git_source_type
     git_repository_url = var.server_app_git_repository_url
   }
+
+  enable_vpc         = true
+  vpc                = module.networking.vpc
+  subnets            = module.networking.private_subnets
+  security_group_ids = [module.security_group_codebuild_server.id]
 
   environment_variables = [
     {
