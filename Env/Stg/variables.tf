@@ -407,7 +407,7 @@ variable "client_app_git_branch_name" {
   type        = string
 }
 
-# Client App Environment variables
+# Client App Environment Variables
 variable "codebuild_client_app_env_api_url" {
   description = "Front end codebuild_client_app_env_API_URL variable value"
   type        = string
@@ -436,4 +436,11 @@ variable "codebuild_client_app_env_word_service_url" {
 variable "codebuild_client_app_env_syncfusion_key" {
   description = "Front end codebuild_client_app_env_SYNCFUSION_KEY variable value"
   type        = string
+}
+
+# Client App Cloud Front Variables
+variable "cloudfront_alternate_domain_names" {
+  type        = list(string)
+  description = "Cloudfront Alternate Domain Names"
+  default     = []
 }

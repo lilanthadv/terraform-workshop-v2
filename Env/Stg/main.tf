@@ -354,13 +354,14 @@ module "ecs_autoscaling" {
 
 # S3 Bucket for Client Application
 module "s3_client_app_bucket" {
-  source            = "../../Modules/S3"
-  service           = local.service
-  name              = "web-s3"
-  description       = "S3 Bucket for front-end app"
-  acl               = "public-read"
-  enable_versioning = false
-  enable_cloudfront = true
+  source                            = "../../Modules/S3"
+  service                           = local.service
+  name                              = "web-s3"
+  description                       = "S3 Bucket for front-end app"
+  acl                               = "public-read"
+  enable_versioning                 = false
+  enable_cloudfront                 = true
+  cloudfront_alternate_domain_names = var.cloudfront_alternate_domain_names
 }
 
 # Cognito User Pool
