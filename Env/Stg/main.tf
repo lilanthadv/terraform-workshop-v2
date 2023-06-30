@@ -296,6 +296,14 @@ module "ecs_taks_definition" {
       "name" : "SQS_QUEUE_URL",
       "value" : module.sqs.queue_url
     },
+    {
+      "name": "STRIPE_STANDERD_PLAN_PRICE_ID",
+      "value": "price_1LvvgtKNVhF84d7ocSet4V8Y"
+     },
+     {
+      "name": "AWS_S3_BUCKET",
+      "value": "ditto-doc-files"
+     }
   ]
 }
 
