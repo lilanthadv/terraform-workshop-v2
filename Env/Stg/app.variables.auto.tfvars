@@ -48,14 +48,14 @@ server_app_git_connection_arn = "arn:aws:codestar-connections:ap-southeast-2:642
 server_app_git_source_type    = "BITBUCKET"
 server_app_git_repository_url = "https://bitbucket.org/dittosoftware/ditto-doc-api.git"
 server_app_git_repository_id  = "dittosoftware/ditto-doc-api"
-server_app_git_branch_name    = "staging"
+server_app_git_branch_name    = "staging-new"
 
 # Client App Git 
 client_app_git_connection_arn = "arn:aws:codestar-connections:ap-southeast-2:642801335081:connection/766a3241-e13c-4580-8720-292d76b51de3"
 client_app_git_source_type    = "BITBUCKET"
 client_app_git_repository_url = "https://bitbucket.org/dittosoftware/ditto-doc-fe.git"
 client_app_git_repository_id  = "dittosoftware/ditto-doc-fe"
-client_app_git_branch_name    = "staging"
+client_app_git_branch_name    = "staging-new"
 
 # Client App Environment Variables
 codebuild_client_app_env_api_url          = "https://staging-api.dittoflow.com"
