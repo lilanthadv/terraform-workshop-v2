@@ -42,10 +42,10 @@ resource "aws_s3_bucket_public_access_block" "s3_acl_public_access_block" {
 
   bucket = aws_s3_bucket.s3.id
 
-  block_public_acls       = false
-  block_public_policy     = false
-  ignore_public_acls      = false
-  restrict_public_buckets = false
+  block_public_acls       = true
+  block_public_policy     = true
+  ignore_public_acls      = true
+  restrict_public_buckets = true
 }
 
 resource "aws_s3_bucket_ownership_controls" "s3_acl_ownership" {
@@ -76,25 +76,13 @@ resource "aws_s3_bucket_policy" "s3_bucket_policy" {
     Version = "2012-10-17"
     Statement = [
       {
-        Principal = "*"
-        Action = [
-          "s3:*",
-        ]
-        Effect = "Allow"
-        Resource = [
-          "arn:aws:s3:::${local.bucket_name}",
-          "arn:aws:s3:::${local.bucket_name}/*"
-        ]
-      },
-      {
-        Sid       = "PublicReadGetObject"
-        Principal = "*"
+        Sid       = "PolicyForCloudFrontPrivateContent"
+        Principal = "arn:aws:iam::cloudfront:user/CloudFront Origin Access Identity ${aws_cloudfront_distribution.s3_distribution[0].id}"
         Action = [
           "s3:GetObject",
         ]
         Effect = "Allow"
         Resource = [
-          "arn:aws:s3:::${local.bucket_name}",
           "arn:aws:s3:::${local.bucket_name}/*"
         ]
       },
@@ -104,18 +92,9 @@ resource "aws_s3_bucket_policy" "s3_bucket_policy" {
   depends_on = [aws_s3_bucket_public_access_block.s3_acl_public_access_block]
 }
 
-resource "aws_s3_bucket_website_configuration" "s3_website_configuration" {
-  count = var.enable_cloudfront ? 1 : 0
-
-  bucket = aws_s3_bucket.s3.id
-
-  index_document {
-    suffix = "index.html"
-  }
-
-  error_document {
-    key = "error.html"
-  }
+# CloudFront Distribution Origin Access Identity
+resource "aws_cloudfront_origin_access_identity" "origin_access_identity" {
+  comment = "Some comment"
 }
 
 # CloudFront Distribution
@@ -124,8 +103,10 @@ resource "aws_cloudfront_distribution" "s3_distribution" {
 
   origin {
     domain_name = aws_s3_bucket.s3.bucket_regional_domain_name
-    origin_id   = aws_s3_bucket.s3.id
+    origin_id   = "myS3Origin"
   }
+
+  aliases = var.cloudfront_alternate_domain_names
 
   enabled             = true
   is_ipv6_enabled     = true

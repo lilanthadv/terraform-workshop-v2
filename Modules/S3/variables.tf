@@ -42,3 +42,9 @@ variable "enable_cloudfront" {
   description = "The enable cloudfront"
   default     = false
 }
+
+variable "cloudfront_alternate_domain_names" {
+  type        = list(string)
+  description = "Cloudfront Alternate Domain Names"
+  default     = []
+}
