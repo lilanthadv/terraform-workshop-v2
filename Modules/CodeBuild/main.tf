@@ -40,13 +40,6 @@ resource "aws_codebuild_project" "codebuild" {
     git_clone_depth = 1
   }
 
-
-  vpc_config {
-    vpc_id             = var.vpc
-    subnets            = var.subnets
-    security_group_ids = var.security_group_ids
-  }
-
   dynamic "vpc_config" {
     for_each = var.enable_vpc ? [1] : []
     content {
