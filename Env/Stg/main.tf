@@ -526,8 +526,6 @@ module "codebuild_server_app" {
       "value" : local.database_connection_string
     },
   ]
-
-  depends_on = [module.codebuild_role]
 }
 
 # CodePipeline for Server App
@@ -543,8 +541,6 @@ module "codepipeline_server_app" {
   git_connection_arn = var.server_app_git_connection_arn
   git_repository_id  = var.server_app_git_repository_id
   git_branch_name    = var.server_app_git_branch_name
-
-  depends_on = [module.codebuild_role, module.codebuild_server_app, module.pipeline_artifact_store_s3]
 }
 
 # CodeBuild Project for Client APP
@@ -614,8 +610,6 @@ module "codebuild_client_app" {
       "value" : var.codebuild_client_app_env_syncfusion_key
     },
   ]
-
-  depends_on = [module.codebuild_role]
 }
 
 # CodePipeline for Client APP
@@ -631,6 +625,4 @@ module "codepipeline_client_app" {
   git_connection_arn = var.client_app_git_connection_arn
   git_repository_id  = var.client_app_git_repository_id
   git_branch_name    = var.client_app_git_branch_name
-
-  depends_on = [module.codebuild_role, module.codebuild_client_app, module.pipeline_artifact_store_s3]
 }
