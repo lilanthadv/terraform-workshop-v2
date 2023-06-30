@@ -475,8 +475,8 @@ module "codebuild_role_policy" {
 module "codebuild_server_app" {
   source          = "../../Modules/CodeBuild"
   service         = local.service
-  name            = "codebuild-project"
-  description     = "CodeBuild project"
+  name            = "codebuild-project-server-app"
+  description     = "CodeBuild Server App"
   codedeploy_role = module.codebuild_role.arn_role
 
   git_source = {
@@ -534,8 +534,8 @@ module "codebuild_server_app" {
 module "codepipeline_server_app" {
   source                   = "../../Modules/CodePipeline"
   service                  = local.service
-  name                     = "codepipeline"
-  description              = "Codepipeline"
+  name                     = "codepipeline-server-app"
+  description              = "Codepipeline Server App"
   pipe_role                = module.codebuild_role.arn_role
   artifact_store_s3_bucket = module.pipeline_artifact_store_s3.id
   codebuild_project        = module.codebuild_server_app.project_id
@@ -551,8 +551,8 @@ module "codepipeline_server_app" {
 module "codebuild_client_app" {
   source          = "../../Modules/CodeBuild"
   service         = local.service
-  name            = "codebuild-project-frontend"
-  description     = "CodeBuild project Frontend"
+  name            = "codebuild-project-client-app"
+  description     = "CodeBuild project Client App"
   codedeploy_role = module.codebuild_role.arn_role
 
   git_source = {
@@ -620,8 +620,8 @@ module "codebuild_client_app" {
 module "codepipeline_client_app" {
   source                   = "../../Modules/CodePipeline"
   service                  = local.service
-  name                     = "codepipeline-frontend"
-  description              = "Codepipeline Frontend"
+  name                     = "codepipeline-client-app"
+  description              = "Codepipeline Client App"
   pipe_role                = module.codebuild_role.arn_role
   artifact_store_s3_bucket = module.pipeline_artifact_store_s3.id
   codebuild_project        = module.codebuild_client_app.project_id
