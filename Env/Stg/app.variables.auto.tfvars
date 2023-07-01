@@ -22,7 +22,7 @@ ecs_taks_definition_env_cognito_redirect_uri          = "https://pre-prod.dittof
 ecs_taks_definition_env_front_end_url                 = "https://pre-prod.dittoflow.com"
 ecs_taks_definition_env_ses_email                     = "no-reply@dittosoftware.com"
 ecs_taks_definition_env_stripe_standerd_plan_price_id = "price_1LvvgtKNVhF84d7ocSet4V8Y"
-ecs_taks_definition_env_aws_s3_bucket                 = "ditto-doc-files"
+ecs_taks_definition_env_aws_s3_bucket                 = "ditto-doc-staging-files"
 
 # ECS Service Variables
 ecs_service_container_port = 8000
