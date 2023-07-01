@@ -464,16 +464,6 @@ module "codebuild_role" {
   create_codebuild_role = true
 }
 
-# Security Group for Codebuild Server
-module "security_group_codebuild_server" {
-  source        = "../../Modules/SecurityGroup"
-  service       = local.service
-  name          = "codebuild-sg-server"
-  description   = "Security Group for Codebuild Server"
-  vpc           = module.networking.vpc
-  ingress_rules = []
-}
-
 # Codebuild Role Policy
 module "codebuild_role_policy" {
   source                  = "../../Modules/IAM"
@@ -484,7 +474,19 @@ module "codebuild_role_policy" {
   attach_to               = module.codebuild_role.name_role
   create_codebuild_policy = true
   ecr_repositories        = [module.ecr.ecr_repository_arn]
-  code_build_projects     = [module.codebuild_server_app.project_arn]
+  code_build_projects     = ["*"]
+
+  depends_on = [module.ecr, module.codebuild_role]
+}
+
+# Security Group for Codebuild Server
+module "security_group_codebuild_server" {
+  source        = "../../Modules/SecurityGroup"
+  service       = local.service
+  name          = "codebuild-sg-server"
+  description   = "Security Group for Codebuild Server"
+  vpc           = module.networking.vpc
+  ingress_rules = []
 }
 
 # CodeBuild Project for Server App
@@ -547,6 +549,8 @@ module "codebuild_server_app" {
       "value" : local.database_connection_string
     },
   ]
+
+  depends_on = [module.networking, module.security_group_codebuild_server, module.codebuild_role, module.codebuild_role_policy]
 }
 
 # CodePipeline for Server App
@@ -562,6 +566,8 @@ module "codepipeline_server_app" {
   git_connection_arn = var.server_app_git_connection_arn
   git_repository_id  = var.server_app_git_repository_id
   git_branch_name    = var.server_app_git_branch_name
+
+  depends_on = [module.pipeline_artifact_store_s3, module.codebuild_server_app, module.codebuild_role, module.codebuild_role_policy]
 }
 
 # CodeBuild Project for Client APP
@@ -631,6 +637,8 @@ module "codebuild_client_app" {
       "value" : var.codebuild_client_app_env_syncfusion_key
     },
   ]
+
+  depends_on = [module.codebuild_role, module.codebuild_role_policy]
 }
 
 # CodePipeline for Client APP
@@ -646,4 +654,6 @@ module "codepipeline_client_app" {
   git_connection_arn = var.client_app_git_connection_arn
   git_repository_id  = var.client_app_git_repository_id
   git_branch_name    = var.client_app_git_branch_name
+
+  depends_on = [module.pipeline_artifact_store_s3, module.codebuild_client_app, module.codebuild_role, module.codebuild_role_policy]
 }
