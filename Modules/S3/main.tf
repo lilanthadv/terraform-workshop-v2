@@ -23,7 +23,6 @@ resource "aws_s3_bucket" "s3" {
   }
 }
 
-
 resource "aws_s3_bucket_versioning" "s3_versioning" {
   bucket = aws_s3_bucket.s3.id
   versioning_configuration {
@@ -84,25 +83,15 @@ resource "aws_s3_bucket_policy" "s3_bucket_policy" {
     Version = "2012-10-17"
     Statement = [
       {
-        Principal = "*"
-        Action = [
-          "s3:*",
-        ]
-        Effect = "Allow"
-        Resource = [
-          "arn:aws:s3:::${local.bucket_name}",
-          "arn:aws:s3:::${local.bucket_name}/*"
-        ]
-      },
-      {
-        Sid       = "PublicReadGetObject"
-        Principal = "*"
+        Sid = "PolicyForCloudFrontPrivateContent"
+        Principal = {
+          AWS = "arn:aws:iam::cloudfront:user/CloudFront Origin Access Identity ${aws_cloudfront_origin_access_identity.origin_access_identity[0].id}"
+        }
         Action = [
           "s3:GetObject",
         ]
         Effect = "Allow"
         Resource = [
-          "arn:aws:s3:::${local.bucket_name}",
           "arn:aws:s3:::${local.bucket_name}/*"
         ]
       },
@@ -121,7 +110,7 @@ resource "aws_cloudfront_distribution" "s3_distribution" {
     origin_id   = aws_s3_bucket.s3.id
 
     s3_origin_config {
-      origin_access_identity = aws_cloudfront_origin_access_identity.origin_access_identity.cloudfront_access_identity_path
+      origin_access_identity = aws_cloudfront_origin_access_identity.origin_access_identity[0].cloudfront_access_identity_path
     }
   }
 
@@ -182,5 +171,6 @@ resource "aws_cloudfront_distribution" "s3_distribution" {
 }
 
 resource "aws_cloudfront_origin_access_identity" "origin_access_identity" {
+  count   = var.enable_cloudfront ? 1 : 0
   comment = aws_s3_bucket.s3.bucket_regional_domain_name
 }
