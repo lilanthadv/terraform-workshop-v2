@@ -166,5 +166,5 @@ resource "aws_cloudfront_distribution" "s3_distribution" {
 }
 
 resource "aws_cloudfront_origin_access_identity" "origin_access_identity" {
-  comment = "Legacy access identity for CloudFront distribution"
+  comment = aws_s3_bucket.s3.id
 }
