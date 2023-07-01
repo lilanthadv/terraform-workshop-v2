@@ -356,6 +356,7 @@ data "aws_iam_policy_document" "role_policy_devops_role" {
       "ec2:AuthorizeSecurityGroupIngress",
       "ec2:RevokeSecurityGroupIngress",
       "ec2:CreateTags",
+      "ec2:DescribeDhcpOptions"
     ]
     resources = ["*"]
   }
