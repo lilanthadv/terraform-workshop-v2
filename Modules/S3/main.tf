@@ -72,20 +72,32 @@ resource "aws_s3_bucket_policy" "s3_bucket_policy" {
   count = var.enable_cloudfront ? 1 : 0
 
   bucket = aws_s3_bucket.s3.id
-
   policy = jsonencode({
-    Version = "2008-10-17"
-    Id      = "PolicyForCloudFrontPrivateContent"
+    Version = "2012-10-17"
     Statement = [
       {
-        Sid    = "1"
+        Principal = "*"
+        Action = [
+          "s3:*",
+        ]
         Effect = "Allow"
-        Principal = {
-          AWS = "arn:aws:iam::cloudfront:user/CloudFront Origin Access Identity ${aws_cloudfront_distribution.s3_distribution[0].id}"
-        }
-        Action   = "s3:GetObject"
-        Resource = "arn:aws:s3:::${local.bucket_name}/*"
-      }
+        Resource = [
+          "arn:aws:s3:::${local.bucket_name}",
+          "arn:aws:s3:::${local.bucket_name}/*"
+        ]
+      },
+      {
+        Sid       = "PublicReadGetObject"
+        Principal = "*"
+        Action = [
+          "s3:GetObject",
+        ]
+        Effect = "Allow"
+        Resource = [
+          "arn:aws:s3:::${local.bucket_name}",
+          "arn:aws:s3:::${local.bucket_name}/*"
+        ]
+      },
     ]
   })
 
@@ -100,6 +112,8 @@ resource "aws_cloudfront_distribution" "s3_distribution" {
     domain_name = aws_s3_bucket.s3.bucket_regional_domain_name
     origin_id   = aws_s3_bucket.s3.id
   }
+
+  aliases = var.cloudfront_alternate_domain_names
 
   enabled             = true
   is_ipv6_enabled     = true
