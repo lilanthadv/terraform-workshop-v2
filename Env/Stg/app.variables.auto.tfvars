@@ -18,8 +18,8 @@ ecs_taks_definition_cpu                      = 1024
 ecs_taks_definition_memory                   = 2048
 ecs_taks_definition_access_key               = "AKIAZLKPR7MU3R2FN5GX"
 ecs_taks_definition_secret_key               = "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"
-ecs_taks_definition_env_cognito_redirect_uri = "https://staging.dittoflow.com/cb"
-ecs_taks_definition_env_front_end_url        = "https://staging.dittoflow.com"
+ecs_taks_definition_env_cognito_redirect_uri = "https://pre-prod.dittoflow.com/cb"
+ecs_taks_definition_env_front_end_url        = "https://pre-prod.dittoflow.com"
 ecs_taks_definition_env_ses_email            = "no-reply@dittosoftware.com"
 
 # ECS Service Variables
@@ -39,8 +39,8 @@ cognito_microsoft_configuration_client_secret = "f1U8Q~R~w-eje.QAq1~gx1At9ubOGbH
 cognito_microsoft_configuration_oidc_issuer   = "https://login.microsoftonline.com/b8410e4c-fbf3-4b8b-8e97-ecab19b58cb5/v2.0"
 
 
-cognito_client_configuration_callback_urls = ["https://staging.dittoflow.com/home", "https://staging.dittoflow.com/cb"]
-cognito_client_configuration_logout_urls   = ["https://staging.dittoflow.com/login", "https://staging.dittoflow.com/home"]
+cognito_client_configuration_callback_urls = ["https://pre-prod.dittoflow.com/home", "https://pre-prod.dittoflow.com/cb"]
+cognito_client_configuration_logout_urls   = ["https://pre-prod.dittoflow.com/login", "https://pre-prod.dittoflow.com/home"]
 
 # Git Variables
 # Server App Git 
@@ -58,12 +58,12 @@ client_app_git_repository_id  = "dittosoftware/ditto-doc-fe"
 client_app_git_branch_name    = "staging-new"
 
 # Client App Environment Variables
-codebuild_client_app_env_api_url          = "https://staging-api.dittoflow.com"
-codebuild_client_app_env_front_end_uri    = "https://staging.dittoflow.com"
+codebuild_client_app_env_api_url          = "https://pre-prod-api.dittoflow.com"
+codebuild_client_app_env_front_end_uri    = "https://pre-prod.dittoflow.com"
 codebuild_client_app_env_stripe_key       = "pk_test_51M4KH6EGNesab9MOOoxD5b3LlqhAdgGzabdxCorfIiWVtlFVFyQLlaWXYnahsvDmKSnoGY0VUZeYyCAhHXdGzypA00oni0dHaX"
 codebuild_client_app_env_pdf_service_url  = "https://staging-e2j-service.dittoflow.com/api/pdfviewer"
 codebuild_client_app_env_word_service_url = "https://staging-e2j-service.dittoflow.com/api/DocumentEditor"
 codebuild_client_app_env_syncfusion_key   = "Mgo+DSMBaFt+QHJqVEZrXVNbdV5dVGpAd0N3RGlcdlR1fUUmHVdTRHRcQltiQH5QdU1hWXlXdnY=;Mgo+DSMBPh8sVXJ1S0R+XVFPd11dXmJWd1p/THNYflR1fV9DaUwxOX1dQl9gSXhSf0VgWndccHNURmI=;ORg4AjUWIQA/Gnt2VFhiQlBEfV5AQmBIYVp/TGpJfl96cVxMZVVBJAtUQF1hSn5Vd0xjWnxWcnRSRGJe;MjQ1OTY5M0AzMjMxMmUzMDJlMzBlVmd5RnplSXdMVmxiUkova09EdUhMVnVHMjlsenpZRjVQOUVlUnRvNHpjPQ==;MjQ1OTY5NEAzMjMxMmUzMDJlMzBGelV2VlRhNnlxWFY0K1NTbUxNS3ZWc3BQY3JwL3FKTTNLOEVRT0krZWg0PQ==;NRAiBiAaIQQuGjN/V0d+Xk9FdlRDX3xKf0x/TGpQb19xflBPallYVBYiSV9jS31TcERqWXxdeHZVTmBfUw==;MjQ1OTY5NkAzMjMxMmUzMDJlMzBEM2JKeFhtOWNjM1Z2Z0N0aXNORXU4Y2djSy9pZXBQWFZOaGZQbTRrZllvPQ==;MjQ1OTY5N0AzMjMxMmUzMDJlMzBmVU9OQTBJV2hPeTFJcWlWYWpMMjlzREtlZUY0Q1J1N25zZE9teWI2ekk4PQ==;Mgo+DSMBMAY9C3t2VFhiQlBEfV5AQmBIYVp/TGpJfl96cVxMZVVBJAtUQF1hSn5Vd0xjWnxWcnRdTmVe;MjQ1OTY5OUAzMjMxMmUzMDJlMzBFQkxBcjBQdE5OMnptVS9LN2lsMkM0TDJTSStWbXBBRDBrNjNzTVFkNkNnPQ==;MjQ1OTcwMEAzMjMxMmUzMDJlMzBad04ra2p6RjZXdHhrYmlKbXA0U0NSajdIMFdYcUJnYnlFVkNaejQvREI4PQ==;MjQ1OTcwMUAzMjMxMmUzMDJlMzBEM2JKeFhtOWNjM1Z2Z0N0aXNORXU4Y2djSy9pZXBQWFZOaGZQbTRrZllvPQ=="
 
 # Client App Cloud Front Variables
-cloudfront_alternate_domain_names = ["staging.dittoflow.com"]
+cloudfront_alternate_domain_names = ["pre-prod.dittoflow.com"]
