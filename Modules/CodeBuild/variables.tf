@@ -68,20 +68,28 @@ variable "environment_variables" {
   }))
 }
 
-variable "environment" {
-  description = "Environment Configuration block"
-  type = object({
-    compute_type    = string
-    image           = string
-    type            = string
-    privileged_mode = bool
-  })
-  default = {
-    compute_type    = "BUILD_GENERAL1_SMALL"
-    image           = "aws/codebuild/standard:5.0"
-    type            = "LINUX_CONTAINER"
-    privileged_mode = true
-  }
+variable "environment_compute_type" {
+  type        = string
+  description = "Environment Compute Type"
+  default     = "BUILD_GENERAL1_SMALL"
+}
+
+variable "environment_image" {
+  type        = string
+  description = "Environment Image"
+  default     = "aws/codebuild/standard:5.0"
+}
+
+variable "environment_type" {
+  type        = string
+  description = "Environment Type"
+  default     = "LINUX_CONTAINER"
+}
+
+variable "environment_privileged_mode" {
+  type        = bool
+  description = "Environment Privileged Mode"
+  default     = true
 }
 
 variable "enable_vpc" {

@@ -13,10 +13,10 @@ resource "aws_codebuild_project" "codebuild" {
   }
 
   environment {
-    compute_type    = var.environment.compute_type
-    image           = var.environment.image
-    type            = var.environment.type
-    privileged_mode = var.environment.privileged_mode
+    compute_type    = var.environment_compute_type
+    image           = var.environment_image
+    type            = var.environment_type
+    privileged_mode = var.environment_privileged_mode
 
     dynamic "environment_variable" {
       for_each = var.environment_variables
