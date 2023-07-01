@@ -372,8 +372,8 @@ module "s3_client_app_bucket" {
   service                           = local.service
   name                              = "web-s3"
   description                       = "S3 Bucket for front-end app"
-  acl                               = "public-read"
-  enable_versioning                 = false
+  acl                               = "private"
+  enable_versioning                 = true
   enable_cloudfront                 = true
   cloudfront_alternate_domain_names = var.cloudfront_alternate_domain_names
   cloudfront_certificate_arn        = var.cloudfront_ssl_certificate_arn
