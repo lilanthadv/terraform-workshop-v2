@@ -134,17 +134,20 @@ resource "aws_cloudfront_distribution" "s3_distribution" {
     target_origin_id = aws_s3_bucket.s3.id
 
     cache_policy_id = data.aws_cloudfront_cache_policy.managed_caching_optimized.id
+  }
 
-    # forwarded_values {
-    #   query_string = false
-    #   cookies {
-    #     forward = "none"
-    #   }
-    # }
+  custom_error_response {
+    error_caching_min_ttl = 10
+    error_code            = 403
+    response_code         = 200
+    response_page_path    = "index.html"
+  }
 
-    # min_ttl     = 0
-    # default_ttl = 3600
-    # max_ttl     = 86400
+  custom_error_response {
+    error_caching_min_ttl = 10
+    error_code            = 404
+    response_code         = 200
+    response_page_path    = "index.html"
   }
 
   restrictions {
