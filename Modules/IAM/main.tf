@@ -344,6 +344,22 @@ data "aws_iam_policy_document" "role_policy_devops_role" {
     resources = ["*"]
   }
   statement {
+    sid    = "AllowVpcActions"
+    effect = "Allow"
+    actions = [
+      "ec2:CreateNetworkInterface",
+      "ec2:DescribeVpcs",
+      "ec2:CreateNetworkInterfacePermission",
+      "ec2:DeleteNetworkInterface",
+      "ec2:DescribeSubnets",
+      "ec2:DescribeSecurityGroups",
+      "ec2:AuthorizeSecurityGroupIngress",
+      "ec2:RevokeSecurityGroupIngress",
+      "ec2:CreateTags",
+    ]
+    resources = ["*"]
+  }
+  statement {
     sid    = "AllowCloudWatchActions"
     effect = "Allow"
     actions = [
