@@ -214,7 +214,6 @@ module "ecs_role_policy" {
   service       = local.service
   name          = "ecs-rp"
   description   = "ECS IAM Policy for ECS Role"
-  create_policy = true
   attach_to     = module.ecs_role.name_role
 }
 
@@ -455,6 +454,7 @@ module "pipeline_artifact_store_s3" {
   force_destroy = var.s3_bucket_pipeline_artifact_store_force_destroy
 }
 
+# Codebuild Role and Policy
 # Codebuild Role
 module "codebuild_role" {
   source                = "../../Modules/IAM"
@@ -464,13 +464,36 @@ module "codebuild_role" {
   create_codebuild_role = true
 }
 
+# Codepipeline Role and Policy
+# Codepipeline Role
+module "codepipeline_role" {
+  source                   = "../../Modules/IAM"
+  service                  = local.service
+  name                     = "codepipeline-role"
+  description              = "Codepipeline Role"
+  create_codepipeline_role = true
+}
+
+# Codepipeline Role Policy
+module "codepipeline_role_policy" {
+  source                     = "../../Modules/IAM"
+  service                    = local.service
+  name                       = "codepipeline-role-policy"
+  description                = "Codepipeline Role Policy"
+  attach_to                  = module.codepipeline_role.name_role
+  create_codepipeline_policy = true
+  ecr_repositories           = [module.ecr.ecr_repository_arn]
+  code_build_projects        = ["*"]
+
+  depends_on = [module.ecr, module.codepipeline_role]
+}
+
 # Codebuild Role Policy
 module "codebuild_role_policy" {
   source                  = "../../Modules/IAM"
   service                 = local.service
   name                    = "codebuild-role-policy"
   description             = "Codebuild Role Policy"
-  create_policy           = true
   attach_to               = module.codebuild_role.name_role
   create_codebuild_policy = true
   ecr_repositories        = [module.ecr.ecr_repository_arn]
@@ -563,7 +586,7 @@ module "codepipeline_server_app" {
   service                  = local.service
   name                     = "codepipeline-server-app"
   description              = "Codepipeline Server App"
-  pipe_role                = module.codebuild_role.arn_role
+  pipe_role                = module.codepipeline_role.arn_role
   artifact_store_s3_bucket = module.pipeline_artifact_store_s3.id
   codebuild_project        = module.codebuild_server_app.project_id
 
@@ -571,7 +594,7 @@ module "codepipeline_server_app" {
   git_repository_id  = var.server_app_git_repository_id
   git_branch_name    = var.server_app_git_branch_name
 
-  depends_on = [module.pipeline_artifact_store_s3, module.codebuild_server_app, module.codebuild_role, module.codebuild_role_policy]
+  depends_on = [module.pipeline_artifact_store_s3, module.codebuild_server_app, module.codepipeline_role, module.codepipeline_role_policy]
 }
 
 # CodeBuild Project for Client APP
@@ -651,7 +674,7 @@ module "codepipeline_client_app" {
   service                  = local.service
   name                     = "codepipeline-client-app"
   description              = "Codepipeline Client App"
-  pipe_role                = module.codebuild_role.arn_role
+  pipe_role                = module.codepipeline_role.arn_role
   artifact_store_s3_bucket = module.pipeline_artifact_store_s3.id
   codebuild_project        = module.codebuild_client_app.project_id
 
@@ -659,5 +682,5 @@ module "codepipeline_client_app" {
   git_repository_id  = var.client_app_git_repository_id
   git_branch_name    = var.client_app_git_branch_name
 
-  depends_on = [module.pipeline_artifact_store_s3, module.codebuild_client_app, module.codebuild_role, module.codebuild_role_policy]
+  depends_on = [module.pipeline_artifact_store_s3, module.codebuild_client_app, module.codepipeline_role, module.codepipeline_role_policy]
 }

@@ -32,15 +32,20 @@ variable "create_ecs_role" {
   default     = false
 }
 
-
-variable "create_codebuild_role" {
-  description = "Set this variable to true if you want to create a role for Codebuild"
+variable "create_codepipeline_role" {
+  description = "Set this variable to true if you want to create a role for Codepipeline"
   type        = bool
   default     = false
 }
 
-variable "create_codedeploy_role" {
-  description = "Set this variable to true if you want to create a role for AWS CodeDeploy"
+variable "create_codepipeline_policy" {
+  description = "Set this variable to true if you want to create a policy for Codepipeline"
+  type        = bool
+  default     = false
+}
+
+variable "create_codebuild_role" {
+  description = "Set this variable to true if you want to create a role for Codebuild"
   type        = bool
   default     = false
 }
@@ -51,8 +56,8 @@ variable "create_codebuild_policy" {
   default     = false
 }
 
-variable "create_policy" {
-  description = "Set this variable to true if you want to create an IAM Policy"
+variable "create_codedeploy_role" {
+  description = "Set this variable to true if you want to create a role for AWS CodeDeploy"
   type        = bool
   default     = false
 }
