@@ -76,25 +76,13 @@ resource "aws_s3_bucket_policy" "s3_bucket_policy" {
     Version = "2012-10-17"
     Statement = [
       {
-        Principal = "*"
-        Action = [
-          "s3:*",
-        ]
-        Effect = "Allow"
-        Resource = [
-          "arn:aws:s3:::${local.bucket_name}",
-          "arn:aws:s3:::${local.bucket_name}/*"
-        ]
-      },
-      {
-        Sid       = "PublicReadGetObject"
-        Principal = "*"
+        Sid       = "PolicyForCloudFrontPrivateContent"
+        Principal = "arn:aws:iam::cloudfront:user/CloudFront Origin Access Identity ${aws_cloudfront_distribution.s3_distribution.id}"
         Action = [
           "s3:GetObject",
         ]
         Effect = "Allow"
         Resource = [
-          "arn:aws:s3:::${local.bucket_name}",
           "arn:aws:s3:::${local.bucket_name}/*"
         ]
       },
