@@ -69,3 +69,4 @@ codebuild_client_app_env_syncfusion_key   = "Mgo+DSMBaFt+QHJqVEZrXVNbdV5dVGpAd0N
 
 # Client App Cloud Front Variables
 cloudfront_alternate_domain_names = ["pre-prod.dittoflow.com"]
+cloudfront_ssl_certificate_arn    = "arn:aws:acm:us-east-1:642801335081:certificate/73c4f1a1-1429-4380-aa10-271a367c9d01"
