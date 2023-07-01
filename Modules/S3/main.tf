@@ -111,6 +111,10 @@ resource "aws_cloudfront_distribution" "s3_distribution" {
   origin {
     domain_name = aws_s3_bucket.s3.bucket_regional_domain_name
     origin_id   = aws_s3_bucket.s3.id
+
+    s3_origin_config {
+      origin_access_identity = aws_cloudfront_origin_access_identity.origin_access_identity.cloudfront_access_identity_path
+    }
   }
 
   aliases = var.cloudfront_alternate_domain_names
@@ -146,8 +150,8 @@ resource "aws_cloudfront_distribution" "s3_distribution" {
 
   viewer_certificate {
     acm_certificate_arn      = var.cloudfront_certificate_arn
-    minimum_protocol_version = "TLSv1.2_2021"
-    ssl_support_method       = "sni-only"
+    minimum_protocol_version = var.cloudfront_minimum_protocol_version
+    ssl_support_method       = var.cloudfront_ssl_support_method
   }
 
   tags = {
@@ -159,4 +163,8 @@ resource "aws_cloudfront_distribution" "s3_distribution" {
     User        = var.service.user
     Terraform   = true
   }
+}
+
+resource "aws_cloudfront_origin_access_identity" "origin_access_identity" {
+  comment = "Legacy access identity for CloudFront distribution"
 }

@@ -54,3 +54,15 @@ variable "cloudfront_certificate_arn" {
   description = "Cloudfront Certificate ARN"
   default     = ""
 }
+
+variable "cloudfront_minimum_protocol_version" {
+  type        = string
+  description = "Cloudfront Minimum Protocol Version"
+  default     = "TLSv1.2_2021"
+}
+
+variable "cloudfront_ssl_support_method" {
+  type        = string
+  description = "Cloudfront SSL Support Method"
+  default     = "sni-only"
+}
