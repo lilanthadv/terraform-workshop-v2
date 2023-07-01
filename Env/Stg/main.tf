@@ -376,6 +376,7 @@ module "s3_client_app_bucket" {
   enable_versioning                 = false
   enable_cloudfront                 = true
   cloudfront_alternate_domain_names = var.cloudfront_alternate_domain_names
+  cloudfront_certificate_arn        = var.ecs_alb_ssl_certificate_arn
 }
 
 # Cognito User Pool

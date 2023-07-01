@@ -48,3 +48,9 @@ variable "cloudfront_alternate_domain_names" {
   description = "Cloudfront Alternate Domain Names"
   default     = []
 }
+
+variable "cloudfront_certificate_arn" {
+  type        = string
+  description = "Cloudfront Certificate ARN"
+  default     = ""
+}
