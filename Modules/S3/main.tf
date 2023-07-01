@@ -125,21 +125,25 @@ resource "aws_cloudfront_distribution" "s3_distribution" {
   default_root_object = "index.html"
 
   default_cache_behavior {
+    compress               = true
+    viewer_protocol_policy = "redirect-to-https"
+
     allowed_methods  = ["DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT"]
     cached_methods   = ["GET", "HEAD"]
     target_origin_id = aws_s3_bucket.s3.id
 
-    forwarded_values {
-      query_string = false
-      cookies {
-        forward = "none"
-      }
-    }
+    cache_policy_id = "658327ea-f89d-4fab-a63d-7e88639e58f6"
 
-    viewer_protocol_policy = "allow-all"
-    min_ttl                = 0
-    default_ttl            = 3600
-    max_ttl                = 86400
+    # forwarded_values {
+    #   query_string = false
+    #   cookies {
+    #     forward = "none"
+    #   }
+    # }
+
+    # min_ttl     = 0
+    # default_ttl = 3600
+    # max_ttl     = 86400
   }
 
   restrictions {
