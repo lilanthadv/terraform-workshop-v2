@@ -128,11 +128,12 @@ resource "aws_cloudfront_distribution" "s3_distribution" {
     compress               = true
     viewer_protocol_policy = "redirect-to-https"
 
-    allowed_methods  = ["DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT"]
-    cached_methods   = ["GET", "HEAD"]
+    allowed_methods = ["DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT"]
+    cached_methods  = ["GET", "HEAD"]
+
     target_origin_id = aws_s3_bucket.s3.id
 
-    cache_policy_id = "658327ea-f89d-4fab-a63d-7e88639e58f6"
+    cache_policy_id = data.aws_cloudfront_cache_policy.managed_caching_optimized.id
 
     # forwarded_values {
     #   query_string = false
