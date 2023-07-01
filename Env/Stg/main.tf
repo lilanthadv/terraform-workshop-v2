@@ -595,7 +595,7 @@ module "codebuild_client_app" {
   environment_variables = [
     {
       "name" : "S3_BUCKET",
-      "value" : module.s3_client_app_bucket.bucket_domain_name
+      "value" : module.s3_client_app_bucket.bucket_name
     },
     {
       "name" : "DISTRIBUTION_ID",
