@@ -509,6 +509,10 @@ module "codebuild_server_app" {
 
   environment_variables = [
     {
+      "name" : "REPOSITORY_NAME",
+      "value" : module.ecr.ecr_repository_name
+    },
+    {
       "name" : "REPOSITORY_URI",
       "value" : module.ecr.ecr_repository_url
     },
