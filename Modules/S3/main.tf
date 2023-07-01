@@ -23,6 +23,14 @@ resource "aws_s3_bucket" "s3" {
   }
 }
 
+
+resource "aws_s3_bucket_versioning" "s3_versioning" {
+  bucket = aws_s3_bucket.s3.id
+  versioning_configuration {
+    status = var.enable_versioning ? "Enabled" : "Disabled"
+  }
+}
+
 resource "aws_s3_bucket_cors_configuration" "s3_cors_configuration" {
   count = var.enable_cloudfront ? 1 : 0
 
