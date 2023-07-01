@@ -104,20 +104,6 @@ resource "aws_s3_bucket_policy" "s3_bucket_policy" {
   depends_on = [aws_s3_bucket_public_access_block.s3_acl_public_access_block]
 }
 
-resource "aws_s3_bucket_website_configuration" "s3_website_configuration" {
-  count = var.enable_cloudfront ? 1 : 0
-
-  bucket = aws_s3_bucket.s3.id
-
-  index_document {
-    suffix = "index.html"
-  }
-
-  error_document {
-    key = "error.html"
-  }
-}
-
 # CloudFront Distribution
 resource "aws_cloudfront_distribution" "s3_distribution" {
   count = var.enable_cloudfront ? 1 : 0
