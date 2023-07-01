@@ -587,6 +587,13 @@ module "codebuild_client_app" {
     git_repository_url = var.client_app_git_repository_url
   }
 
+  environment = {
+    compute_type    = "BUILD_GENERAL1_LARGE"
+    image           = "aws/codebuild/standard:5.0"
+    type            = "LINUX_CONTAINER"
+    privileged_mode = true
+  }
+
   environment_variables = [
     {
       "name" : "S3_BUCKET",
