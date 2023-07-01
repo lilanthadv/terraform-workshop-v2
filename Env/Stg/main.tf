@@ -304,11 +304,11 @@ module "ecs_taks_definition" {
     },
     {
       "name" : "STRIPE_STANDERD_PLAN_PRICE_ID",
-      "value" : "price_1LvvgtKNVhF84d7ocSet4V8Y"
+      "value" : var.ecs_taks_definition_env_stripe_standerd_plan_price_id
     },
     {
       "name" : "AWS_S3_BUCKET",
-      "value" : "ditto-doc-files"
+      "value" : var.ecs_taks_definition_env_aws_s3_bucket
     }
   ]
 }

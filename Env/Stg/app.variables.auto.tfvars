@@ -13,14 +13,16 @@ bastion_host_key_pair_name = "bastionhost"
 ecs_alb_ssl_certificate_arn = "arn:aws:acm:ap-southeast-2:642801335081:certificate/266992e2-0f7a-4066-b15f-dae1649522ec"
 
 # ECS Task Definition Variables
-ecs_taks_definition_host_port                = 8000
-ecs_taks_definition_cpu                      = 1024
-ecs_taks_definition_memory                   = 2048
-ecs_taks_definition_access_key               = "AKIAZLKPR7MU3R2FN5GX"
-ecs_taks_definition_secret_key               = "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"
-ecs_taks_definition_env_cognito_redirect_uri = "https://pre-prod.dittoflow.com/cb"
-ecs_taks_definition_env_front_end_url        = "https://pre-prod.dittoflow.com"
-ecs_taks_definition_env_ses_email            = "no-reply@dittosoftware.com"
+ecs_taks_definition_host_port                         = 8000
+ecs_taks_definition_cpu                               = 1024
+ecs_taks_definition_memory                            = 2048
+ecs_taks_definition_access_key                        = "AKIAZLKPR7MU3R2FN5GX"
+ecs_taks_definition_secret_key                        = "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"
+ecs_taks_definition_env_cognito_redirect_uri          = "https://pre-prod.dittoflow.com/cb"
+ecs_taks_definition_env_front_end_url                 = "https://pre-prod.dittoflow.com"
+ecs_taks_definition_env_ses_email                     = "no-reply@dittosoftware.com"
+ecs_taks_definition_env_stripe_standerd_plan_price_id = "price_1LvvgtKNVhF84d7ocSet4V8Y"
+ecs_taks_definition_env_aws_s3_bucket                 = "ditto-doc-files"
 
 # ECS Service Variables
 ecs_service_container_port = 8000

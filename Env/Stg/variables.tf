@@ -265,6 +265,16 @@ variable "ecs_taks_definition_env_ses_email" {
   type        = string
 }
 
+variable "ecs_taks_definition_env_stripe_standerd_plan_price_id" {
+  description = "ECS Taks Definition ENV Stripe Standerd Plan Price Id"
+  type        = string
+}
+
+variable "ecs_taks_definition_env_aws_s3_bucket" {
+  description = "ECS Taks Definition ENV AWS S3 Bucket"
+  type        = string
+}
+
 # ECS Service
 variable "ecs_service_container_port" {
   type        = number
