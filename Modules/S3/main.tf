@@ -77,7 +77,7 @@ resource "aws_s3_bucket_policy" "s3_bucket_policy" {
     Statement = [
       {
         Sid       = "PolicyForCloudFrontPrivateContent"
-        Principal = "arn:aws:iam::cloudfront:user/CloudFront Origin Access Identity ${aws_cloudfront_distribution.s3_distribution.id}"
+        Principal = "arn:aws:iam::cloudfront:user/CloudFront Origin Access Identity ${aws_cloudfront_distribution.s3_distribution[0].id}"
         Action = [
           "s3:GetObject",
         ]
