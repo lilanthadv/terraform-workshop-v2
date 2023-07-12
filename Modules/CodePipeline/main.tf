@@ -15,17 +15,16 @@ resource "aws_codepipeline" "aws_codepipeline" {
     name = "Source"
 
     action {
-      name             = "Source"
+      name             = "SourceAction"
       category         = "Source"
       owner            = "AWS"
-      provider         = "CodeStarSourceConnection"
+      provider         = "CodeCommit"
       version          = "1"
       output_artifacts = ["SourceArtifact"]
 
       configuration = {
-        ConnectionArn    = var.git_connection_arn
-        FullRepositoryId = var.git_repository_id
-        BranchName       = var.git_branch_name
+        RepositoryName = var.git_repository_name
+        BranchName     = var.git_branch_name
       }
     }
   }

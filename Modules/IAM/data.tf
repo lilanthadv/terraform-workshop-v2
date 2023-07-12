@@ -13,6 +13,17 @@ data "aws_iam_policy_document" "role_policy_devops_role" {
     resources = ["*"]
   }
   statement {
+    sid    = "AllowCodeCommitActions"
+    effect = "Allow"
+    actions = [
+      "codecommit:Get*",
+      "codecommit:List*",
+      "codecommit:GitPull",
+      "codecommit:UploadArchive"
+    ]
+    resources = var.code_commit_repositories
+  }
+  statement {
     sid    = "AllowCodebuildActions"
     effect = "Allow"
     actions = [

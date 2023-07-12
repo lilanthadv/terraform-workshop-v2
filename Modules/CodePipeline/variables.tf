@@ -29,14 +29,9 @@ variable "codebuild_project" {
   description = "Codebuild Project Id"
 }
 
-variable "git_connection_arn" {
+variable "git_repository_name" {
   type        = string
-  description = "Git Connection ARN"
-}
-
-variable "git_repository_id" {
-  type        = string
-  description = "Git Repository Id"
+  description = "Git Repository Name"
 }
 
 variable "git_branch_name" {

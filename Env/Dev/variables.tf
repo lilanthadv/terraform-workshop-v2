@@ -265,6 +265,16 @@ variable "ecs_taks_definition_env_ses_email" {
   type        = string
 }
 
+variable "ecs_taks_definition_env_stripe_standerd_plan_price_id" {
+  description = "ECS Taks Definition ENV Stripe Standerd Plan Price Id"
+  type        = string
+}
+
+variable "ecs_taks_definition_env_aws_s3_bucket" {
+  description = "ECS Taks Definition ENV AWS S3 Bucket"
+  type        = string
+}
+
 # ECS Service
 variable "ecs_service_container_port" {
   type        = number
@@ -407,7 +417,7 @@ variable "client_app_git_branch_name" {
   type        = string
 }
 
-# Client App Environment variables
+# Client App Environment Variables
 variable "codebuild_client_app_env_api_url" {
   description = "Front end codebuild_client_app_env_API_URL variable value"
   type        = string
@@ -436,4 +446,16 @@ variable "codebuild_client_app_env_word_service_url" {
 variable "codebuild_client_app_env_syncfusion_key" {
   description = "Front end codebuild_client_app_env_SYNCFUSION_KEY variable value"
   type        = string
+}
+
+# Client App Cloud Front Variables
+variable "cloudfront_alternate_domain_names" {
+  type        = list(string)
+  description = "Cloudfront Alternate Domain Names"
+  default     = []
+}
+
+variable "cloudfront_ssl_certificate_arn" {
+  type        = string
+  description = "Cloudfront SSl Certificate ARN"
 }

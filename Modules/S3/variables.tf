@@ -1,68 +1,56 @@
-variable "service" {
-  description = "Service details"
-  type = object({
-    app_name             = string
-    app_environment      = string
-    app_version          = string
-    user                 = string
-    resource_name_prefix = string
-  })
-}
-
-variable "name" {
-  description = "The name for the resource"
+variable "bucket_name" {
+  description = "The name of the bucket"
   type        = string
 }
 
-variable "description" {
+variable "bucket_description" {
   type        = string
-  description = "The description"
+  description = "The description of the bucket"
 }
 
-variable "force_destroy" {
+variable "custom_tags" {
+  description = "Tags for the S3 bucket"
+  type        = map(string)
+  default     = null
+}
+
+variable "enable_force_destroy" {
+  description = "Enable Force Destroy"
   type        = bool
-  description = "Force Destroy"
+  default     = false
+}
+
+variable "enable_versioning" {
+  description = "Enable Versioning for S3 Bucket"
+  type        = bool
   default     = false
 }
 
 variable "acl" {
+  description = "Access Control List (ACL) for the S3 bucket"
   type        = string
-  description = "ACL"
   default     = "private"
+
+  validation {
+    condition     = can(regex("^(private|public-read|public-read-write|authenticated-read|aws-exec-read|bucket-owner-read|bucket-owner-full-control)$", var.acl))
+    error_message = "Invalid ACL. Please choose one of the following: private, public-read, public-read-write, authenticated-read, aws-exec-read, bucket-owner-read, bucket-owner-full-control."
+  }
 }
 
-variable "enable_versioning" {
-  type        = bool
-  description = "The enable versioning"
-  default     = false
-}
+variable "public_access_block" {
+  description = "Configuration for S3 bucket public access block"
 
-variable "enable_cloudfront" {
-  type        = bool
-  description = "The enable cloudfront"
-  default     = false
-}
+  type = object({
+    block_public_acls       = optional(bool, false)
+    block_public_policy     = optional(bool, false)
+    ignore_public_acls      = optional(bool, false)
+    restrict_public_buckets = optional(bool, false)
+  })
 
-variable "cloudfront_alternate_domain_names" {
-  type        = list(string)
-  description = "Cloudfront Alternate Domain Names"
-  default     = []
-}
-
-variable "cloudfront_certificate_arn" {
-  type        = string
-  description = "Cloudfront Certificate ARN"
-  default     = ""
-}
-
-variable "cloudfront_minimum_protocol_version" {
-  type        = string
-  description = "Cloudfront Minimum Protocol Version"
-  default     = "TLSv1.2_2021"
-}
-
-variable "cloudfront_ssl_support_method" {
-  type        = string
-  description = "Cloudfront SSL Support Method"
-  default     = "sni-only"
+  default = {
+    block_public_acls       = false
+    block_public_policy     = false
+    ignore_public_acls      = false
+    restrict_public_buckets = false
+  }
 }

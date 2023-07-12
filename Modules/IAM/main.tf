@@ -86,7 +86,8 @@ resource "aws_iam_role" "devops_role" {
         "Service": [
           "codebuild.amazonaws.com",
           "codedeploy.amazonaws.com",
-          "codepipeline.amazonaws.com"
+          "codepipeline.amazonaws.com",
+          "codecommit.amazonaws.com"
         ]
       },
       "Action": "sts:AssumeRole"

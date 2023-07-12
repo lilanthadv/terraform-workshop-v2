@@ -75,6 +75,12 @@ variable "code_build_projects" {
   default     = ["*"]
 }
 
+variable "code_commit_repositories" {
+  description = "The Code Commit Repositories"
+  type        = list(string)
+  default     = ["*"]
+}
+
 variable "code_deploy_resources" {
   description = "The Code Deploy applications and deployment groups to which grant IAM access"
   type        = list(string)
