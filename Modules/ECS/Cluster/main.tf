@@ -4,15 +4,15 @@
 
 # AWS ECS Cluster
 resource "aws_ecs_cluster" "ecs_cluster" {
-  name = "${var.service.resource_name_prefix}-${var.name}"
+  name = var.cluster_name
 
-  tags = {
-    Name        = "${var.service.resource_name_prefix}-${var.name}"
-    Description = var.description
-    Service     = var.service.app_name
-    Environment = var.service.app_environment
-    Version     = var.service.app_version
-    User        = var.service.user
-    Terraform   = true
-  }
+  tags = merge(
+    {
+      Name        = var.cluster_name
+      Description = var.cluster_description
+      Owner       = split("/", data.aws_caller_identity.current_user.arn)[1]
+      Terraform   = true
+    },
+    var.custom_tags != null ? var.custom_tags : {}
+  )
 }

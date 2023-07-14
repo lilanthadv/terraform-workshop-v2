@@ -16,20 +16,20 @@ resource "aws_appautoscaling_target" "ecs_target" {
     ]
   }
 
-  tags = {
-    Name        = "${var.service.resource_name_prefix}-${var.name}"
-    Description = "Autoscaling target to linke the ECS cluster and service"
-    Service     = var.service.app_name
-    Environment = var.service.app_environment
-    Version     = var.service.app_version
-    User        = var.service.user
-    Terraform   = true
-  }
+  tags = merge(
+    {
+      Name        = var.autoscaling_name
+      Description = var.autoscaling_description
+      Owner       = split("/", data.aws_caller_identity.current_user.arn)[1]
+      Terraform   = true
+    },
+    var.custom_tags != null ? var.custom_tags : {}
+  )
 }
 
 # AWS Autoscaling Policy Using CPU Allocation
 resource "aws_appautoscaling_policy" "cpu" {
-  name               = "${var.service.resource_name_prefix}-${var.name}-policy-cpu"
+  name               = "${var.autoscaling_name}-policy-cpu"
   resource_id        = aws_appautoscaling_target.ecs_target.resource_id
   scalable_dimension = aws_appautoscaling_target.ecs_target.scalable_dimension
   service_namespace  = aws_appautoscaling_target.ecs_target.service_namespace
@@ -48,7 +48,7 @@ resource "aws_appautoscaling_policy" "cpu" {
 
 # AWS Autoscaling Policy Using Memory Allocation
 resource "aws_appautoscaling_policy" "memory" {
-  name               = "${var.service.resource_name_prefix}-${var.name}-policy-memory"
+  name               = "${var.autoscaling_name}-policy-memory"
   resource_id        = aws_appautoscaling_target.ecs_target.resource_id
   scalable_dimension = aws_appautoscaling_target.ecs_target.scalable_dimension
   service_namespace  = aws_appautoscaling_target.ecs_target.service_namespace
@@ -71,8 +71,9 @@ resource "aws_appautoscaling_policy" "memory" {
 
 # High Memory Alarm
 resource "aws_cloudwatch_metric_alarm" "high-memory-policy-alarm" {
-  alarm_name          = "${var.service.resource_name_prefix}-${var.name}-cloudwatch-high-memory-alarm"
-  alarm_description   = "High Memory for ecs service-${var.service_name}"
+  alarm_name        = "${var.autoscaling_name}-cloudwatch-high-memory-alarm"
+  alarm_description = "High Memory Alarm for ecs service-${var.service_name}"
+
   comparison_operator = "GreaterThanOrEqualToThreshold"
   evaluation_periods  = "2"
   metric_name         = "MemoryUtilization"
@@ -86,21 +87,22 @@ resource "aws_cloudwatch_metric_alarm" "high-memory-policy-alarm" {
     "ClusterName" = var.cluster_name
   }
 
-  tags = {
-    Name        = "${var.service.resource_name_prefix}-${var.name}-cloudwatch-high-memory-alarm"
-    Description = "High memory alarm"
-    Service     = var.service.app_name
-    Environment = var.service.app_environment
-    Version     = var.service.app_version
-    User        = var.service.user
-    Terraform   = true
-  }
+  tags = merge(
+    {
+      Name        = "${var.autoscaling_name}-cloudwatch-high-memory-alarm"
+      Description = "High Memory Alarm for ecs service-${var.service_name}"
+      Owner       = split("/", data.aws_caller_identity.current_user.arn)[1]
+      Terraform   = true
+    },
+    var.custom_tags != null ? var.custom_tags : {}
+  )
 }
 
 # High CPU Alarm
 resource "aws_cloudwatch_metric_alarm" "high-cpu-policy-alarm" {
-  alarm_name          = "${var.service.resource_name_prefix}-${var.name}-cloudwatch-high-cpu-alarm"
-  alarm_description   = "High CPUPolicy Landing Page for ecs service-${var.service_name}"
+  alarm_name        = "${var.autoscaling_name}-cloudwatch-high-cpu-alarm"
+  alarm_description = "High CPUPolicy alarm for ecs service-${var.service_name}"
+
   comparison_operator = "GreaterThanOrEqualToThreshold"
   evaluation_periods  = "2"
   metric_name         = "CPUUtilization"
@@ -114,13 +116,13 @@ resource "aws_cloudwatch_metric_alarm" "high-cpu-policy-alarm" {
     "ClusterName" = var.cluster_name
   }
 
-  tags = {
-    Name        = "${var.service.resource_name_prefix}-${var.name}-cloudwatch-high-cpu-alarm"
-    Description = "High CPU alarm"
-    Service     = var.service.app_name
-    Environment = var.service.app_environment
-    Version     = var.service.app_version
-    User        = var.service.user
-    Terraform   = true
-  }
+  tags = merge(
+    {
+      Name        = "${var.autoscaling_name}-cloudwatch-high-cpu-alarm"
+      Description = "High CPUPolicy alarm for ecs service-${var.service_name}"
+      Owner       = split("/", data.aws_caller_identity.current_user.arn)[1]
+      Terraform   = true
+    },
+    var.custom_tags != null ? var.custom_tags : {}
+  )
 }

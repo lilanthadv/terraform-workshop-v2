@@ -1,22 +1,17 @@
-variable "service" {
-  description = "Service details"
-  type = object({
-    app_name             = string
-    app_environment      = string
-    app_version          = string
-    user                 = string
-    resource_name_prefix = string
-  })
-}
-
-variable "name" {
-  description = "The name for the resource"
+variable "cluster_name" {
+  description = "The Database Cluster name"
   type        = string
 }
 
-variable "description" {
+variable "cluster_description" {
+  description = "The Database Cluster description"
   type        = string
-  description = "The description"
+}
+
+variable "custom_tags" {
+  description = "Tags for the S3 bucket"
+  type        = map(string)
+  default     = null
 }
 
 variable "engine" {

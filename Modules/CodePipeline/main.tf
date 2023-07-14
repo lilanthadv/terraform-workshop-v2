@@ -3,7 +3,7 @@
 ========================================================*/
 
 resource "aws_codepipeline" "aws_codepipeline" {
-  name     = "${var.service.resource_name_prefix}-${var.name}"
+  name     = var.codepipeline_name
   role_arn = var.pipe_role
 
   artifact_store {
@@ -51,13 +51,13 @@ resource "aws_codepipeline" "aws_codepipeline" {
     ignore_changes = [stage[0].action[0].configuration]
   }
 
-  tags = {
-    Name        = "${var.service.resource_name_prefix}-${var.name}"
-    Description = var.description
-    Service     = var.service.app_name
-    Environment = var.service.app_environment
-    Version     = var.service.app_version
-    User        = var.service.user
-    Terraform   = true
-  }
+  tags = merge(
+    {
+      Name        = var.codepipeline_name
+      Description = var.codepipeline_description
+      Owner       = split("/", data.aws_caller_identity.current_user.arn)[1]
+      Terraform   = true
+    },
+    var.custom_tags != null ? var.custom_tags : {}
+  )
 }

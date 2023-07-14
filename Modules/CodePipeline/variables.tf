@@ -1,23 +1,19 @@
-variable "service" {
-  description = "Service details"
-  type = object({
-    app_name             = string
-    app_environment      = string
-    app_version          = string
-    user                 = string
-    resource_name_prefix = string
-  })
-}
-
-variable "name" {
-  description = "The name of your security resource"
+variable "codepipeline_name" {
+  description = "Codepipeline Name"
   type        = string
 }
 
-variable "description" {
+variable "codepipeline_description" {
   type        = string
-  description = "The description"
+  description = "Codepipeline description"
 }
+
+variable "custom_tags" {
+  description = "Tags"
+  type        = map(string)
+  default     = null
+}
+
 
 variable "pipe_role" {
   type        = string

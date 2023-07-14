@@ -3,8 +3,9 @@
 ===================================*/
 
 resource "aws_codebuild_project" "codebuild" {
-  name          = "${var.service.resource_name_prefix}-${var.name}"
-  description   = var.description
+  name        = var.codebuild_app_name
+  description = var.codebuild_app_description
+
   build_timeout = var.build_timeout
   service_role  = var.codedeploy_role
 
@@ -49,13 +50,13 @@ resource "aws_codebuild_project" "codebuild" {
     }
   }
 
-  tags = {
-    Name        = "${var.service.resource_name_prefix}-${var.name}"
-    Description = var.description
-    Service     = var.service.app_name
-    Environment = var.service.app_environment
-    Version     = var.service.app_version
-    User        = var.service.user
-    Terraform   = true
-  }
+  tags = merge(
+    {
+      Name        = var.codebuild_app_name
+      Description = var.codebuild_app_description
+      Owner       = split("/", data.aws_caller_identity.current_user.arn)[1]
+      Terraform   = true
+    },
+    var.custom_tags != null ? var.custom_tags : {}
+  )
 }

@@ -1,22 +1,18 @@
-variable "service" {
-  description = "Service details"
-  type = object({
-    app_name             = string
-    app_environment      = string
-    app_version          = string
-    user                 = string
-    resource_name_prefix = string
-  })
+variable "cognito_user_pool_name" {
+  type        = string
+  description = "Cognito User Pool Name"
 }
 
-variable "name" {
+variable "cognito_user_pool_description" {
   type        = string
-  description = "The name of your security resource"
+  description = "Cognito User Pool description"
 }
 
-variable "description" {
-  type        = string
-  description = "The description"
+variable "custom_tags" {
+  description = "Tags"
+  type        = map(string)
+  default     = null
+
 }
 
 variable "username_attributes" {
@@ -24,60 +20,6 @@ variable "username_attributes" {
   description = "The Username Attributes"
   default     = ["email"]
 }
-
-
-variable "lambda_config" {
-  type = object({
-    pre_sign_up_arn    = string
-    custom_message_arn = string
-  })
-  description = "Lambda Config"
-}
-
-variable "google_configurations" {
-  type = object({
-    authorize_scopes = optional(string, "profile email openid")
-    client_id        = string
-    client_secret    = string
-  })
-  description = "Google Identity Provider configurations"
-}
-
-variable "microsoft_configuration" {
-  description = "Microsoft Identity Provider configurations"
-
-  type = object({
-    authorize_scopes          = optional(string)
-    client_id                 = string
-    client_secret             = string
-    oidc_issuer               = string
-    attributes_request_method = optional(string)
-    authorize_url             = optional(string)
-    attributes_url            = optional(string)
-    jwks_uri                  = optional(string)
-  })
-
-  default = {
-    authorize_scopes          = "profile email openid"
-    client_id                 = ""
-    client_secret             = ""
-    oidc_issuer               = ""
-    attributes_request_method = "GET"
-    authorize_url             = ""
-    attributes_url            = ""
-    jwks_uri                  = ""
-  }
-}
-
-variable "client_configuration" {
-  description = "Cognito User Pool Client Configurations"
-
-  type = object({
-    callback_urls = list(string)
-    logout_urls   = list(string)
-  })
-}
-
 
 variable "schema_attributes" {
   type = list(object({
@@ -146,7 +88,6 @@ variable "cognito_user_pool_client_explicit_auth_flows" {
   type        = list(string)
   description = "Cognito User Pool Client Explicit Auth Flows"
   default = [
-    "ALLOW_ADMIN_USER_PASSWORD_AUTH",
     "ALLOW_CUSTOM_AUTH",
     "ALLOW_REFRESH_TOKEN_AUTH",
     "ALLOW_USER_SRP_AUTH",
@@ -156,7 +97,7 @@ variable "cognito_user_pool_client_explicit_auth_flows" {
 variable "cognito_user_pool_supported_identity_providers" {
   type        = list(string)
   description = "Cognito User Pool Client Supported Identity Providers"
-  default     = ["COGNITO", "Google", "Microsoft"]
+  default     = ["COGNITO"]
 }
 
 variable "cognito_user_pool_allowed_oauth_flows" {
@@ -165,10 +106,5 @@ variable "cognito_user_pool_allowed_oauth_flows" {
   default     = ["code"]
 }
 
-variable "cognito_user_pool_allowed_oauth_scopes" {
-  type        = list(string)
-  description = "Cognito User Pool Client Allowed OAuth Scopes"
-  default     = ["aws.cognito.signin.user.admin", "openid", "email", "profile"]
-}
 
 

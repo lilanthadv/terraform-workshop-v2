@@ -1,22 +1,17 @@
-variable "service" {
-  description = "Service details"
-  type = object({
-    app_name             = string
-    app_environment      = string
-    app_version          = string
-    user                 = string
-    resource_name_prefix = string
-  })
-}
-
-variable "name" {
-  description = "The name of your security resource"
+variable "vpc_name" {
+  description = "The VPC name"
   type        = string
 }
 
-variable "description" {
+variable "vpc_description" {
   type        = string
-  description = "The description"
+  description = "The VPC description"
+}
+
+variable "custom_tags" {
+  description = "Tags for the VPC"
+  type        = map(string)
+  default     = null
 }
 
 variable "availability_zones" {

@@ -2,9 +2,9 @@
   AWS RDS Proxy    
 ========================================================================*/
 
-# Create iam role
+# Create IAM Role
 resource "aws_iam_role" "db_proxy_iam_role" {
-  name = "${var.service.resource_name_prefix}-${var.name}-proxy-iam-role"
+  name = "${var.cluster_name}-proxy-iam-role"
 
   assume_role_policy = <<EOF
 {
@@ -22,20 +22,20 @@ resource "aws_iam_role" "db_proxy_iam_role" {
 }
 EOF
 
-  tags = {
-    Name        = "${var.service.resource_name_prefix}-${var.name}-proxy-iam-role"
-    Description = "${var.description} Proxy IAM Role"
-    Service     = var.service.app_name
-    Environment = var.service.app_environment
-    Version     = var.service.app_version
-    User        = var.service.user
-    Terraform   = true
-  }
+  tags = merge(
+    {
+      Name        = "${var.cluster_name}-proxy-iam-role"
+      Description = "${var.cluster_description}, Proxy IAM Role"
+      Owner       = split("/", data.aws_caller_identity.current_user.arn)[1]
+      Terraform   = true
+    },
+    var.custom_tags != null ? var.custom_tags : {}
+  )
 }
 
-# Create iam policy
+# Create IAM Policy
 resource "aws_iam_policy" "db_proxy_iam_role_policy" {
-  name = "${var.service.resource_name_prefix}-${var.name}-proxy-iam-role-policy"
+  name = "${var.cluster_name}-proxy-iam-role-policy"
 
   policy = <<EOF
 {
@@ -59,18 +59,18 @@ resource "aws_iam_policy" "db_proxy_iam_role_policy" {
 }
 EOF
 
-  tags = {
-    Name        = "${var.service.resource_name_prefix}-${var.name}-proxy-iam-role-policy"
-    Description = "${var.description} Proxy IAM Role Policy"
-    Service     = var.service.app_name
-    Environment = var.service.app_environment
-    Version     = var.service.app_version
-    User        = var.service.user
-    Terraform   = true
-  }
+  tags = merge(
+    {
+      Name        = "${var.cluster_name}-proxy-iam-role-policy"
+      Description = "${var.cluster_description}, Proxy IAM Role Policy"
+      Owner       = split("/", data.aws_caller_identity.current_user.arn)[1]
+      Terraform   = true
+    },
+    var.custom_tags != null ? var.custom_tags : {}
+  )
 }
 
-# Create iam role policy attachment
+# Create IAM Role Policy Attachment
 resource "aws_iam_role_policy_attachment" "db_proxy_iam_role_policy_attachment" {
   role       = aws_iam_role.db_proxy_iam_role.name
   policy_arn = aws_iam_policy.db_proxy_iam_role_policy.arn
@@ -81,24 +81,24 @@ resource "random_string" "random_key_suffix" {
   special = false
 }
 
-# Create secret
+# Create Secret
 resource "aws_secretsmanager_secret" "db_secret" {
-  name = "${var.service.resource_name_prefix}-${var.name}-proxy-secret-${random_string.random_key_suffix.result}"
+  name = "${var.cluster_name}-proxy-secret-${random_string.random_key_suffix.result}"
 
   kms_key_id = var.storage_encrypted ? aws_kms_key.rds_encryption_key[0].arn : null
 
-  tags = {
-    Name        = "${var.service.resource_name_prefix}-${var.name}-proxy-secret-${random_string.random_key_suffix.result}"
-    Description = "${var.description} Proxy Secret"
-    Service     = var.service.app_name
-    Environment = var.service.app_environment
-    Version     = var.service.app_version
-    User        = var.service.user
-    Terraform   = true
-  }
+  tags = merge(
+    {
+      Name        = "${var.cluster_name}-proxy-secret-${random_string.random_key_suffix.result}"
+      Description = "${var.cluster_description}, Proxy Secret"
+      Owner       = split("/", data.aws_caller_identity.current_user.arn)[1]
+      Terraform   = true
+    },
+    var.custom_tags != null ? var.custom_tags : {}
+  )
 }
 
-# Create secret version
+# Create Secret Version
 resource "aws_secretsmanager_secret_version" "db_secret_version" {
   secret_id     = aws_secretsmanager_secret.db_secret.id
   secret_string = <<EOF
@@ -114,9 +114,9 @@ resource "aws_secretsmanager_secret_version" "db_secret_version" {
 EOF
 }
 
-# Create db proxy
+# Create Database Proxy
 resource "aws_db_proxy" "db_proxy" {
-  name                   = "${var.service.resource_name_prefix}-${var.name}-proxy"
+  name                   = "${var.cluster_name}-proxy"
   debug_logging          = true
   engine_family          = "POSTGRESQL"
   vpc_security_group_ids = var.security_groups
@@ -129,18 +129,18 @@ resource "aws_db_proxy" "db_proxy" {
     secret_arn  = aws_secretsmanager_secret.db_secret.arn
   }
 
-  tags = {
-    Name        = "${var.service.resource_name_prefix}-${var.name}-proxy"
-    Description = "${var.description} Proxy"
-    Service     = var.service.app_name
-    Environment = var.service.app_environment
-    Version     = var.service.app_version
-    User        = var.service.user
-    Terraform   = true
-  }
+  tags = merge(
+    {
+      Name        = "${var.cluster_name}-proxy"
+      Description = "${var.cluster_description}, Proxy"
+      Owner       = split("/", data.aws_caller_identity.current_user.arn)[1]
+      Terraform   = true
+    },
+    var.custom_tags != null ? var.custom_tags : {}
+  )
 }
 
-# Create db proxy default target group
+# Create Database Proxy Default Target Group
 resource "aws_db_proxy_default_target_group" "db_proxy_target_group" {
   db_proxy_name = aws_db_proxy.db_proxy.name
 
@@ -149,7 +149,7 @@ resource "aws_db_proxy_default_target_group" "db_proxy_target_group" {
   }
 }
 
-# Create db proxy target
+# Create Database Proxy Target
 resource "aws_db_proxy_target" "db_proxy_target" {
   db_cluster_identifier = aws_rds_cluster.db_cluster.cluster_identifier
   db_proxy_name         = aws_db_proxy.db_proxy.name

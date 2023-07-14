@@ -1,28 +1,29 @@
-variable "service" {
-  description = "Service details"
-  type = object({
-    app_name             = string
-    app_environment      = string
-    app_version          = string
-    user                 = string
-    resource_name_prefix = string
-  })
-}
-
-variable "name" {
+variable "role_name" {
   description = "The name for the Role"
   type        = string
 }
 
-variable "description" {
+variable "role_description" {
   type        = string
   description = "The description"
 }
 
 
-variable "name_ecs_task_role" {
+variable "ecs_task_role_name" {
   description = "The name for the Ecs Task Role"
   type        = string
+  default     = null
+}
+
+variable "ecs_task_role_description" {
+  description = "The name for the Ecs Task Role description"
+  type        = string
+  default     = null
+}
+
+variable "custom_tags" {
+  description = "Tags for the S3 bucket"
+  type        = map(string)
   default     = null
 }
 

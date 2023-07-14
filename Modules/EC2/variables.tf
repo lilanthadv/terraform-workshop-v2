@@ -1,23 +1,18 @@
-variable "service" {
-  description = "Service details"
-  type = object({
-    app_name             = string
-    app_environment      = string
-    app_version          = string
-    user                 = string
-    resource_name_prefix = string
-  })
-}
-
-variable "name" {
+variable "instance_name" {
   type        = string
-  description = "The name of your security resource"
+  description = "The Instance Name"
 
 }
 
-variable "description" {
+variable "instance_description" {
   type        = string
-  description = "The description"
+  description = "The Instance Description"
+}
+
+variable "custom_tags" {
+  description = "Tags for the S3 bucket"
+  type        = map(string)
+  default     = null
 }
 
 variable "ami" {

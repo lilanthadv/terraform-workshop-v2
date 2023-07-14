@@ -8,69 +8,69 @@ resource "aws_vpc" "main" {
   enable_dns_support   = true
   enable_dns_hostnames = true
 
-  tags = {
-    Name        = "${var.service.resource_name_prefix}-${var.name}"
-    Description = var.description
-    Service     = var.service.app_name
-    Environment = var.service.app_environment
-    Version     = var.service.app_version
-    User        = var.service.user
-    Terraform   = true
-  }
+  tags = merge(
+    {
+      Name        = var.vpc_name
+      Description = var.vpc_description
+      Owner       = split("/", data.aws_caller_identity.current_user.arn)[1]
+      Terraform   = true
+    },
+    var.custom_tags != null ? var.custom_tags : {}
+  )
 }
 
-# Create the public subnets
+# Create the Public Subnets
 resource "aws_subnet" "public_subnet" {
   count             = length(var.availability_zones)
   vpc_id            = aws_vpc.main.id
   cidr_block        = "10.0.${count.index}.0/24"
   availability_zone = var.availability_zones[count.index]
 
-  tags = {
-    Name        = "${var.service.resource_name_prefix}-${var.name}-public-subnet-${count.index}",
-    Description = "${var.description} Public Subnet ${count.index}"
-    Service     = var.service.app_name
-    Environment = var.service.app_environment
-    Version     = var.service.app_version
-    User        = var.service.user
-    Terraform   = true
-  }
+  tags = merge(
+    {
+      Name        = "${var.vpc_name}-public-subnet-${count.index}"
+      Description = "${var.vpc_description}, Public Subnet ${count.index}"
+      Owner       = split("/", data.aws_caller_identity.current_user.arn)[1]
+      Terraform   = true
+    },
+    var.custom_tags != null ? var.custom_tags : {}
+  )
 }
 
-# Create the private subnets
+# Create the Private Subnets
 resource "aws_subnet" "private_subnet" {
   count             = length(var.availability_zones)
   vpc_id            = aws_vpc.main.id
   cidr_block        = "10.0.${count.index + 100}.0/24"
   availability_zone = var.availability_zones[count.index]
 
-  tags = {
-    Name        = "${var.service.resource_name_prefix}-${var.name}-private-subnet-${count.index}",
-    Description = "${var.description} Private Subnet ${count.index}"
-    Service     = var.service.app_name
-    Environment = var.service.app_environment
-    Version     = var.service.app_version
-    User        = var.service.user
-    Terraform   = true
-  }
+  tags = merge(
+    {
+      Name        = "${var.vpc_name}-private-subnet-${count.index}"
+      Description = "${var.vpc_description}, Private Subnet ${count.index}"
+      Owner       = split("/", data.aws_caller_identity.current_user.arn)[1]
+      Terraform   = true
+    },
+    var.custom_tags != null ? var.custom_tags : {}
+  )
 }
 
-# Create an internet gateway
+# Create an Internet Gateway
 resource "aws_internet_gateway" "internet_gateway" {
   vpc_id = aws_vpc.main.id
 
-  tags = {
-    Name        = "${var.service.resource_name_prefix}-${var.name}-ig",
-    Description = "${var.description} Internet Gateway"
-    Service     = var.service.app_name
-    Environment = var.service.app_environment
-    Version     = var.service.app_version
-    User        = var.service.user
-    Terraform   = true
-  }
+  tags = merge(
+    {
+      Name        = "${var.vpc_name}-ig"
+      Description = "${var.vpc_description}, Internet Gateway"
+      Owner       = split("/", data.aws_caller_identity.current_user.arn)[1]
+      Terraform   = true
+    },
+    var.custom_tags != null ? var.custom_tags : {}
+  )
 }
 
-# Create a route table for the public subnets
+# Create a Route Table for the Public Subnets
 resource "aws_route_table" "public_route_table" {
   vpc_id = aws_vpc.main.id
 
@@ -79,56 +79,56 @@ resource "aws_route_table" "public_route_table" {
     gateway_id = aws_internet_gateway.internet_gateway.id
   }
 
-  tags = {
-    Name        = "${var.service.resource_name_prefix}-${var.name}-public-rt",
-    Description = "${var.description} Route Table for the Public Subnets"
-    Service     = var.service.app_name
-    Environment = var.service.app_environment
-    Version     = var.service.app_version
-    User        = var.service.user
-    Terraform   = true
-  }
+  tags = merge(
+    {
+      Name        = "${var.vpc_name}-public-rt"
+      Description = "${var.vpc_description}, Public Subnets Route Table"
+      Owner       = split("/", data.aws_caller_identity.current_user.arn)[1]
+      Terraform   = true
+    },
+    var.custom_tags != null ? var.custom_tags : {}
+  )
 }
 
-# Associate the public subnets with the public route table
+# Associate the Public Subnets with the Public Route Table
 resource "aws_route_table_association" "public_subnet_association" {
   count          = length(var.availability_zones)
   subnet_id      = aws_subnet.public_subnet[count.index].id
   route_table_id = aws_route_table.public_route_table.id
 }
 
-# Create an Elastic IP for the NAT gateway
+# Create an Elastic IP for the NAT Gateway
 resource "aws_eip" "nat_gateway_eip" {
   domain = "vpc"
 
-  tags = {
-    Name        = "${var.service.resource_name_prefix}-${var.name}-ng-eip",
-    Description = "${var.description} Elastic IP for the NAT gateway"
-    Service     = var.service.app_name
-    Environment = var.service.app_environment
-    Version     = var.service.app_version
-    User        = var.service.user
-    Terraform   = true
-  }
+  tags = merge(
+    {
+      Name        = "${var.vpc_name}-ng-eip"
+      Description = "${var.vpc_description}, NAT Gateway Elastic IP"
+      Owner       = split("/", data.aws_caller_identity.current_user.arn)[1]
+      Terraform   = true
+    },
+    var.custom_tags != null ? var.custom_tags : {}
+  )
 }
 
-# Create a NAT gateway
+# Create a NAT Gateway
 resource "aws_nat_gateway" "nat_gateway" {
   allocation_id = aws_eip.nat_gateway_eip.id
   subnet_id     = aws_subnet.public_subnet[0].id
 
-  tags = {
-    Name        = "${var.service.resource_name_prefix}-${var.name}-ng",
-    Description = "${var.description} NAT gateway"
-    Service     = var.service.app_name
-    Environment = var.service.app_environment
-    Version     = var.service.app_version
-    User        = var.service.user
-    Terraform   = true
-  }
+  tags = merge(
+    {
+      Name        = "${var.vpc_name}-ng"
+      Description = "${var.vpc_description}, NAT gateway"
+      Owner       = split("/", data.aws_caller_identity.current_user.arn)[1]
+      Terraform   = true
+    },
+    var.custom_tags != null ? var.custom_tags : {}
+  )
 }
 
-# Create a route table for the private subnets
+# Create a Route Table for the Private Subnets
 resource "aws_route_table" "private_route_table" {
   vpc_id = aws_vpc.main.id
 
@@ -137,18 +137,18 @@ resource "aws_route_table" "private_route_table" {
     nat_gateway_id = aws_nat_gateway.nat_gateway.id
   }
 
-  tags = {
-    Name        = "${var.service.resource_name_prefix}-${var.name}-private-rt",
-    Description = "${var.description} Route Table for the Private Subnets"
-    Service     = var.service.app_name
-    Environment = var.service.app_environment
-    Version     = var.service.app_version
-    User        = var.service.user
-    Terraform   = true
-  }
+  tags = merge(
+    {
+      Name        = "${var.vpc_name}-private-rt"
+      Description = "${var.vpc_description}, Private Subnets Route Table"
+      Owner       = split("/", data.aws_caller_identity.current_user.arn)[1]
+      Terraform   = true
+    },
+    var.custom_tags != null ? var.custom_tags : {}
+  )
 }
 
-# Associate the private subnets with the private route table
+# Associate the Private Subnets with the Private Route Table
 resource "aws_route_table_association" "private_subnet_association" {
   count          = length(var.availability_zones)
   subnet_id      = aws_subnet.private_subnet[count.index].id

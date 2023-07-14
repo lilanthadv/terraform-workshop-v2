@@ -1,22 +1,11 @@
-variable "service" {
-  description = "Service details"
-  type = object({
-    app_name             = string
-    app_environment      = string
-    app_version          = string
-    user                 = string
-    resource_name_prefix = string
-  })
-}
-
-variable "name" {
-  description = "The name of your security resource"
+variable "autoscaling_name" {
+  description = "Autoscaling Name"
   type        = string
 }
 
-variable "description" {
+variable "autoscaling_description" {
   type        = string
-  description = "The description"
+  description = "Autoscaling Description"
 }
 
 variable "min_capacity" {
@@ -49,4 +38,11 @@ variable "appautoscaling_target_service_namespace" {
   description = "App Auto Scaling Target Service Namespace"
   type        = string
   default     = "ecs"
+}
+
+variable "custom_tags" {
+  description = "Tags for the S3 bucket"
+  type        = map(string)
+  default     = null
+
 }

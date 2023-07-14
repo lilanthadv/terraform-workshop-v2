@@ -13,8 +13,3 @@ output "domain" {
 output "client_id" {
   value = aws_cognito_user_pool_client.client.id
 }
-
-output "provider_google_id" {
-  value = aws_cognito_identity_provider.google.id
-}
-

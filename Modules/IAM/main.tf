@@ -2,10 +2,10 @@
   AWS IAM for different resources
 ============================================*/
 
-# ECS Task Excecution Role
+# Create ECS Task Excecution Role
 resource "aws_iam_role" "ecs_task_excecution_role" {
   count              = var.create_ecs_role == true ? 1 : 0
-  name               = "${var.service.resource_name_prefix}-${var.name}"
+  name               = var.role_name
   assume_role_policy = <<EOF
 {
   "Version": "2012-10-17",
@@ -26,21 +26,21 @@ EOF
     create_before_destroy = true
   }
 
-  tags = {
-    Name        = "${var.service.resource_name_prefix}-${var.name}"
-    Description = var.description
-    Service     = var.service.app_name
-    Environment = var.service.app_environment
-    Version     = var.service.app_version
-    User        = var.service.user
-    Terraform   = true
-  }
+  tags = merge(
+    {
+      Name        = var.role_name
+      Description = var.role_description
+      Owner       = split("/", data.aws_caller_identity.current_user.arn)[1]
+      Terraform   = true
+    },
+    var.custom_tags != null ? var.custom_tags : {}
+  )
 }
 
-# ECS Task Role
+# Create ECS Task Role
 resource "aws_iam_role" "ecs_task_role" {
   count              = var.create_ecs_role == true ? 1 : 0
-  name               = "${var.service.resource_name_prefix}-${var.name_ecs_task_role}"
+  name               = var.ecs_task_role_name
   assume_role_policy = <<EOF
 {
   "Version": "2012-10-17",
@@ -61,21 +61,21 @@ EOF
     create_before_destroy = true
   }
 
-  tags = {
-    Name        = "${var.service.resource_name_prefix}-${var.name_ecs_task_role}"
-    Description = var.description
-    Service     = var.service.app_name
-    Environment = var.service.app_environment
-    Version     = var.service.app_version
-    User        = var.service.user
-    Terraform   = true
-  }
+  tags = merge(
+    {
+      Name        = var.ecs_task_role_name
+      Description = var.ecs_task_role_description
+      Owner       = split("/", data.aws_caller_identity.current_user.arn)[1]
+      Terraform   = true
+    },
+    var.custom_tags != null ? var.custom_tags : {}
+  )
 }
 
 # Devops Role
 resource "aws_iam_role" "devops_role" {
   count              = var.create_codebuild_role == true ? 1 : 0
-  name               = "${var.service.resource_name_prefix}-${var.name}"
+  name               = var.role_name
   assume_role_policy = <<EOF
 {
   "Version": "2012-10-17",
@@ -100,21 +100,21 @@ EOF
     create_before_destroy = true
   }
 
-  tags = {
-    Name        = "${var.service.resource_name_prefix}-${var.name}"
-    Description = var.description
-    Service     = var.service.app_name
-    Environment = var.service.app_environment
-    Version     = var.service.app_version
-    User        = var.service.user
-    Terraform   = true
-  }
+  tags = merge(
+    {
+      Name        = var.role_name
+      Description = var.role_description
+      Owner       = split("/", data.aws_caller_identity.current_user.arn)[1]
+      Terraform   = true
+    },
+    var.custom_tags != null ? var.custom_tags : {}
+  )
 }
 
 # Codedeploy Role
 resource "aws_iam_role" "codedeploy_role" {
   count              = var.create_codedeploy_role == true ? 1 : 0
-  name               = "${var.service.resource_name_prefix}-${var.name}"
+  name               = var.role_name
   assume_role_policy = <<EOF
 {
   "Version": "2012-10-17",
@@ -131,59 +131,59 @@ resource "aws_iam_role" "codedeploy_role" {
 }
 EOF
 
-  tags = {
-    Name        = "${var.service.resource_name_prefix}-${var.name}"
-    Description = var.description
-    Service     = var.service.app_name
-    Environment = var.service.app_environment
-    Version     = var.service.app_version
-    User        = var.service.user
-    Terraform   = true
-  }
+  tags = merge(
+    {
+      Name        = var.role_name
+      Description = var.role_description
+      Owner       = split("/", data.aws_caller_identity.current_user.arn)[1]
+      Terraform   = true
+    },
+    var.custom_tags != null ? var.custom_tags : {}
+  )
 }
 
 # IAM Policies
 resource "aws_iam_policy" "policy_for_role" {
   count       = var.create_codebuild_policy == true ? 1 : 0
-  name        = "${var.service.resource_name_prefix}-${var.name}-policy"
-  description = var.description
+  name        = "${var.role_name}-policy"
+  description = "${var.role_description}, Policy"
   policy      = data.aws_iam_policy_document.role_policy_devops_role.json
 
   lifecycle {
     create_before_destroy = true
   }
 
-  tags = {
-    Name        = "${var.service.resource_name_prefix}-${var.name}-policy"
-    Description = var.description
-    Service     = var.service.app_name
-    Environment = var.service.app_environment
-    Version     = var.service.app_version
-    User        = var.service.user
-    Terraform   = true
-  }
+  tags = merge(
+    {
+      Name        = "${var.role_name}-policy"
+      Description = "${var.role_description}, Policy"
+      Owner       = split("/", data.aws_caller_identity.current_user.arn)[1]
+      Terraform   = true
+    },
+    var.custom_tags != null ? var.custom_tags : {}
+  )
 }
 
 # Policy for ECS Task Role
 resource "aws_iam_policy" "policy_for_ecs_task_role" {
   count       = var.create_ecs_role == true ? 1 : 0
-  name        = "${var.service.resource_name_prefix}-${var.name_ecs_task_role}-policy"
-  description = var.description
+  name        = "${var.ecs_task_role_name}-policy"
+  description = "${var.ecs_task_role_description}, Policy"
   policy      = data.aws_iam_policy_document.role_policy_ecs_task_role.json
 
   lifecycle {
     create_before_destroy = true
   }
 
-  tags = {
-    Name        = "${var.service.resource_name_prefix}-${var.name_ecs_task_role}-policy"
-    Description = var.description
-    Service     = var.service.app_name
-    Environment = var.service.app_environment
-    Version     = var.service.app_version
-    User        = var.service.user
-    Terraform   = true
-  }
+  tags = merge(
+    {
+      Name        = "${var.ecs_task_role_name}-policy"
+      Description = "${var.ecs_task_role_description}, Policy"
+      Owner       = split("/", data.aws_caller_identity.current_user.arn)[1]
+      Terraform   = true
+    },
+    var.custom_tags != null ? var.custom_tags : {}
+  )
 }
 
 # IAM Policies Attachments

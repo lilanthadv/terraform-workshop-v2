@@ -8,7 +8,7 @@ data "aws_key_pair" "instance_key" {
   include_public_key = var.ec2_key_pair_include_public_key
 }
 
-# AWS Instance
+# Create AWS Instance
 resource "aws_instance" "instance" {
   ami                         = var.ami
   instance_type               = var.instance_type
@@ -21,30 +21,30 @@ resource "aws_instance" "instance" {
 
   key_name = data.aws_key_pair.instance_key.key_name
 
-  tags = {
-    Name        = "${var.service.resource_name_prefix}-${var.name}"
-    Description = var.description
-    Service     = var.service.app_name
-    Environment = var.service.app_environment
-    Version     = var.service.app_version
-    User        = var.service.user
-    Terraform   = true
-  }
+  tags = merge(
+    {
+      Name        = var.instance_name
+      Description = var.instance_description
+      Owner       = split("/", data.aws_caller_identity.current_user.arn)[1]
+      Terraform   = true
+    },
+    var.custom_tags != null ? var.custom_tags : {}
+  )
 }
 
-# AWS EIP
+# Create AWS EIP
 resource "aws_eip" "bastion_host" {
   count    = var.associate_elastic_ip ? 1 : 0
   domain   = var.ec2_eip_domain
   instance = aws_instance.instance.id
 
-  tags = {
-    Name        = "${var.service.resource_name_prefix}-${var.name}-eip"
-    Description = "${var.description} Elastic IP"
-    Service     = var.service.app_name
-    Environment = var.service.app_environment
-    Version     = var.service.app_version
-    User        = var.service.user
-    Terraform   = true
-  }
+  tags = merge(
+    {
+      Name        = "${var.instance_name}-eip"
+      Description = "${var.instance_description}, Elastic IP"
+      Owner       = split("/", data.aws_caller_identity.current_user.arn)[1]
+      Terraform   = true
+    },
+    var.custom_tags != null ? var.custom_tags : {}
+  )
 }

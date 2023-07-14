@@ -1,40 +1,31 @@
-variable "service" {
-  description = "Service details"
-  type = object({
-    app_name             = string
-    app_environment      = string
-    app_version          = string
-    user                 = string
-    resource_name_prefix = string
-  })
-}
-
-variable "name" {
-  description = "A name for the target group or ALB"
-  type        = string
-}
-
-variable "description" {
-  type        = string
-  description = "The description"
-}
-
-variable "target_group" {
-  description = "The ARN of the created target group"
-  type        = string
-  default     = ""
-}
-
-variable "target_group_green" {
-  description = "The ANR of the created target group"
-  type        = string
-  default     = ""
+variable "custom_tags" {
+  description = "Tags"
+  type        = map(string)
+  default     = null
 }
 
 variable "create_alb" {
   description = "Set to true to create an ALB"
   type        = bool
   default     = false
+}
+
+variable "alb_name" {
+  description = "ALB Name"
+  type        = string
+  default     = ""
+}
+
+variable "alb_description" {
+  description = "ALB Description"
+  type        = string
+  default     = ""
+}
+
+variable "target_group" {
+  description = "The ARN of the created target group"
+  type        = string
+  default     = ""
 }
 
 variable "enable_https" {
@@ -47,6 +38,18 @@ variable "create_target_group" {
   description = "Set to true to create a Target Group"
   type        = bool
   default     = false
+}
+
+variable "target_group_name" {
+  description = "ALB Target Group Name"
+  type        = string
+  default     = ""
+}
+
+variable "target_group_description" {
+  description = "ALB Target Group Description"
+  type        = string
+  default     = ""
 }
 
 variable "subnets" {

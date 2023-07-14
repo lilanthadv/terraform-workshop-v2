@@ -2,10 +2,10 @@
   AWS Application Load Balancer + Target groups
 ===============================================================*/
 
-# ALB
+# Create ALB
 resource "aws_alb" "alb" {
   count              = var.create_alb == true ? 1 : 0
-  name               = "${var.service.resource_name_prefix}-${var.name}"
+  name               = var.alb_name
   subnets            = [var.subnets[0], var.subnets[1]]
   security_groups    = [var.security_group]
   load_balancer_type = var.load_balancer_type
@@ -13,18 +13,18 @@ resource "aws_alb" "alb" {
   enable_http2       = var.load_balancer_enable_http2
   idle_timeout       = var.load_balancer_idle_timeout
 
-  tags = {
-    Name        = "${var.service.resource_name_prefix}-${var.name}"
-    Description = var.description
-    Service     = var.service.app_name
-    Environment = var.service.app_environment
-    Version     = var.service.app_version
-    User        = var.service.user
-    Terraform   = true
-  }
+   tags = merge(
+    {
+      Name        = var.alb_name
+    Description = var.alb_description
+      Owner       = split("/", data.aws_caller_identity.current_user.arn)[1]
+      Terraform   = true
+    },
+    var.custom_tags != null ? var.custom_tags : {}
+  )
 }
 
-# ALB Listenet for HTTPS
+# Create ALB Listenet for HTTPS
 resource "aws_alb_listener" "https_listener" {
   count             = var.create_alb == true ? (var.enable_https == true ? 1 : 0) : 0
   load_balancer_arn = aws_alb.alb[0].id
@@ -43,7 +43,7 @@ resource "aws_alb_listener" "https_listener" {
   }
 }
 
-# ALB Listener for HTTP
+# Create ALB Listener for HTTP
 resource "aws_alb_listener" "http_listener" {
   count             = var.create_alb == true ? 1 : 0
   load_balancer_arn = aws_alb.alb[0].id
@@ -60,10 +60,10 @@ resource "aws_alb_listener" "http_listener" {
   }
 }
 
-# Target Groups for ALB
+# Create Target Groups for ALB
 resource "aws_alb_target_group" "target_group" {
   count                = var.create_target_group == true ? 1 : 0
-  name                 = "${var.service.resource_name_prefix}-${var.name}"
+  name                 = var.target_group_name
   port                 = var.port
   protocol             = var.protocol
   vpc_id               = var.vpc
@@ -86,13 +86,13 @@ resource "aws_alb_target_group" "target_group" {
     create_before_destroy = true
   }
 
-  tags = {
-    Name        = "${var.service.resource_name_prefix}-${var.name}"
-    Description = var.description
-    Service     = var.service.app_name
-    Environment = var.service.app_environment
-    Version     = var.service.app_version
-    User        = var.service.user
-    Terraform   = true
-  }
+  tags = merge(
+    {
+      Name        = var.target_group_name
+      Description = var.target_group_description
+      Owner       = split("/", data.aws_caller_identity.current_user.arn)[1]
+      Terraform   = true
+    },
+    var.custom_tags != null ? var.custom_tags : {}
+  )
 }

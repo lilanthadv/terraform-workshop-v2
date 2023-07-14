@@ -1,22 +1,17 @@
-variable "service" {
-  description = "Service details"
-  type = object({
-    app_name             = string
-    app_environment      = string
-    app_version          = string
-    user                 = string
-    resource_name_prefix = string
-  })
-}
-
-variable "name" {
-  description = "The name for the Role"
+variable "taks_definition_name" {
+  description = "Taks Definition Name"
   type        = string
 }
 
-variable "description" {
+variable "taks_definition_description" {
   type        = string
-  description = "The description"
+  description = "Taks Definition description"
+}
+
+variable "custom_tags" {
+  description = "Tags"
+  type        = map(string)
+  default     = null
 }
 
 variable "execution_role_arn" {

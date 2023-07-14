@@ -1,3 +1,6 @@
+# Get Current User Details
+data "aws_caller_identity" "current_user" {}
+
 # IAM Policy Documents
 data "aws_iam_policy_document" "role_policy_devops_role" {
   statement {

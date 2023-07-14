@@ -1,22 +1,17 @@
-variable "service" {
-  description = "Service details"
-  type = object({
-    app_name             = string
-    app_environment      = string
-    app_version          = string
-    user                 = string
-    resource_name_prefix = string
-  })
-}
-
-variable "name" {
-  description = "The name of your security resource"
+variable "ecr_name" {
+  description = "ECR Repository Name"
   type        = string
 }
 
-variable "description" {
+variable "ecr_description" {
   type        = string
-  description = "The description"
+  description = "ECR Repository Description"
+}
+
+variable "custom_tags" {
+  description = "Tags"
+  type        = map(string)
+  default     = null
 }
 
 variable "ecr_repository_image_tag_mutability" {
